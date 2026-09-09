@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TI杯 · 1w3 的故事（含前传）</title>
+<style>
+  :root {
+    --bg: #0e1017;
+    --bg-soft: #141823;
+    --card: #1a1f2e;
+    --card-hover: #20263a;
+    --line: #2c3448;
+    --text: #e9ecf5;
+    --text-dim: #9aa3b8;
+    --accent: #ffb84d;
+    --accent-2: #ff7a59;
+    --good: #57d9a3;
+    --bad: #ff6b6b;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(255,122,89,.08), transparent 60%),
+      radial-gradient(900px 400px at 10% 10%, rgba(255,184,77,.06), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei", "Segoe UI", sans-serif;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  ::selection { background: rgba(255,184,77,.35); }
+
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ---------- 开场 ---------- */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(800px 400px at 50% 0%, rgba(255,122,89,.10), transparent 60%),
+      var(--bg);
+    transition: opacity .6s ease, visibility .6s ease;
+  }
+
+  #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .splash-inner {
+    text-align: center;
+    max-width: 660px;
+    padding: 32px;
+    animation: rise .8s ease both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: .35em;
+    color: var(--accent);
+    border: 1px solid rgba(255,184,77,.35);
+    border-radius: 999px;
+    padding: 4px 16px;
+    margin-bottom: 22px;
+    text-transform: uppercase;
+  }
+
+  .splash-inner h1 {
+    font-size: clamp(34px, 6vw, 58px);
+    font-weight: 900;
+    letter-spacing: .02em;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 18px;
+  }
+
+  .splash-inner .sub {
+    color: var(--text-dim);
+    font-size: clamp(14px, 2.4vw, 17px);
+    margin-bottom: 34px;
+  }
+
+  #startBtn {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #221303;
+    font-size: 17px;
+    font-weight: 800;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 44px;
+    box-shadow: 0 8px 24px rgba(255,122,89,.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  #startBtn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 12px 30px rgba(255,122,89,.45); }
+  #startBtn:active { transform: scale(.98); }
+
+  .splash-note {
+    margin-top: 26px;
+    font-size: 12px;
+    color: #5d6679;
+  }
+
+  /* ---------- 头部 ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(14,16,23,.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .header-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-title {
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .header-title span { color: var(--accent); }
+
+  .progress-wrap { flex: 1; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  #progressBar { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .5s ease; }
+  #progressText { font-size: 12px; color: var(--text-dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .heart-pill {
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 4px 12px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text-dim);
+    transition: color .3s ease, border-color .3s ease;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .heart-pill.heart-high { color: var(--good); border-color: rgba(87,217,163,.5); }
+  .heart-pill.heart-mid { color: var(--accent); border-color: rgba(255,184,77,.5); }
+  .heart-pill.heart-low { color: var(--bad); border-color: rgba(255,107,107,.5); }
+
+  /* ---------- 主内容 ---------- */
+  main { max-width: 760px; margin: 0 auto; padding: 44px 20px 110px; }
+
+  .intro h2 {
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 900;
+    margin-bottom: 10px;
+  }
+
+  .intro p {
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .cast {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .cast-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+
+  .cast-card:hover { transform: translateY(-2px); border-color: rgba(255,184,77,.4); }
+
+  .cast-card .emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+  .cast-card .name { font-weight: 800; font-size: 15px; }
+  .cast-card .role { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  /* ---------- 章节分隔 ---------- */
+  .divider {
+    margin: 46px 0 26px;
+    text-align: center;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .3em;
+    position: relative;
+  }
+
+  .divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--line);
+    z-index: 0;
+  }
+
+  .divider span {
+    position: relative;
+    z-index: 1;
+    background: var(--bg);
+    padding: 0 16px;
+  }
+
+  /* ---------- 时间线 ---------- */
+  .timeline {
+    margin-top: 10px;
+    position: relative;
+    padding-left: 0;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 27px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .timeline.done::before {
+    background: linear-gradient(180deg, var(--accent), var(--good));
+  }
+
+  .node {
+    position: relative;
+    padding: 0 0 26px 74px;
+  }
+
+  .node:last-of-type { padding-bottom: 8px; }
+
+  .dot {
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 2px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .3s ease, box-shadow .3s ease;
+  }
+
+  .node.unlocked .dot {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(255,184,77,.45);
+  }
+
+  .node.unlocked .dot::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .node.locked .dot::after {
+    content: "🔒";
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .node-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+    transition: opacity .3s ease, border-color .3s ease, transform .15s ease;
+  }
+
+  .node-card.clickable { cursor: pointer; }
+  .node-card.clickable:hover { border-color: rgba(255,184,77,.45); transform: translateY(-2px); }
+
+  .node.locked .node-card {
+    opacity: .5;
+    filter: saturate(.4);
+  }
+
+  .node-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    color: #221303;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    border-radius: 8px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+  }
+
+  .node.locked .badge { background: var(--line); color: var(--text-dim); }
+
+  .node-head h3 { font-size: 17px; font-weight: 800; }
+
+  .node-body {
+    display: none;
+    padding-top: 14px;
+    color: #d3d9e8;
+    font-size: 15px;
+  }
+
+  .node.open .node-body { display: block; animation: fadeIn .4s ease both; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  blockquote {
+    margin: 14px 0 4px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--accent-2);
+    background: rgba(255,122,89,.08);
+    border-radius: 0 10px 10px 0;
+    color: #f3c3b2;
+    font-size: 14px;
+  }
+
+  blockquote::before { content: "「"; color: var(--accent-2); font-weight: 800; }
+  blockquote::after { content: "」"; color: var(--accent-2); font-weight: 800; }
+
+  .node-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .hint { font-size: 12px; color: var(--text-dim); }
+
+  .next-btn {
+    background: transparent;
+    border: 1px solid rgba(255,184,77,.5);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 8px 20px;
+    transition: background .15s ease, transform .15s ease;
+  }
+
+  .next-btn:hover { background: rgba(255,184,77,.12); transform: translateX(3px); }
+  .next-btn:active { transform: scale(.97); }
+  .next-btn.hidden { display: none; }
+
+  /* ---------- 选择题 ---------- */
+  .quiz {
+    margin-top: 14px;
+    background: rgba(87,217,163,.05);
+    border: 1px solid rgba(87,217,163,.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .dialog {
+    margin-bottom: 12px;
+    background: rgba(255,122,89,.05);
+    border: 1px solid rgba(255,122,89,.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .d-speaker {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .d-line {
+    font-size: 14px;
+    color: #f3c3b2;
+    padding: 8px 12px;
+    background: rgba(255,122,89,.08);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .q-title { font-weight: 800; color: var(--good); font-size: 14px; margin-bottom: 10px; }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .option {
+    text-align: left;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+
+  .option:hover:not(:disabled) { border-color: var(--good); background: rgba(87,217,163,.08); transform: translateX(2px); }
+  .option:disabled { opacity: .55; cursor: default; }
+  .option.chosen {
+    border-color: var(--good);
+    background: rgba(87,217,163,.15);
+    opacity: 1;
+  }
+
+  .reply {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--good);
+    min-height: 1.4em;
+  }
+
+  /* ---------- 小游戏 ---------- */
+  .game {
+    margin-top: 14px;
+    background: rgba(255,184,77,.05);
+    border: 1px solid rgba(255,184,77,.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .game-start {
+    width: 100%;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #221303;
+    font-weight: 800;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .game-meter {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--bg-soft);
+    overflow: hidden;
+    margin: 12px 0 8px;
+  }
+
+  .game-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 999px;
+    transition: width .1s linear;
+  }
+
+  .game-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .game-fire {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 18px;
+    border-radius: 10px;
+    padding: 14px;
+    transition: background .1s ease, transform .05s ease;
+  }
+
+  .game-fire:hover:not(:disabled) { background: rgba(255,184,77,.12); }
+  .game-fire:active:not(:disabled) { transform: scale(.97); }
+  .game-fire:disabled { opacity: .45; cursor: default; }
+
+  .game-result {
+    margin-top: 10px;
+    font-size: 13px;
+    min-height: 1.4em;
+  }
+
+  .game-result.good { color: var(--good); }
+  .game-result.bad { color: var(--bad); }
+
+  /* ---------- 结局 ---------- */
+  .finale {
+    display: none;
+    margin-top: 46px;
+    background:
+      radial-gradient(600px 300px at 50% 0%, rgba(87,217,163,.10), transparent 60%),
+      var(--card);
+    border: 1px solid rgba(87,217,163,.4);
+    border-radius: var(--radius);
+    padding: 34px 26px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .finale.show { display: block; animation: fadeIn .6s ease both; }
+
+  .finale .flag { font-size: 44px; display: block; margin-bottom: 10px; }
+  .finale h2 { font-size: 24px; font-weight: 900; color: var(--good); margin-bottom: 12px; }
+
+  .title-banner {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 900;
+    color: #221303;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    border-radius: 999px;
+    padding: 8px 26px;
+    margin-bottom: 16px;
+  }
+
+  .finale p { color: var(--text-dim); font-size: 15px; max-width: 500px; margin: 0 auto 18px; }
+
+  .one-liner {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--text);
+    max-width: 520px;
+    margin: 0 auto 18px;
+  }
+
+  .one-liner b { color: var(--bad); }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 22px;
+  }
+
+  .stats b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  .eval-box {
+    max-width: 520px;
+    margin: 0 auto 20px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+  }
+
+  .eval-box h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .eval-box p {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .finale-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 999px;
+    padding: 12px 26px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: scale(.98); }
+
+  .btn-primary {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #221303;
+    box-shadow: 0 6px 18px rgba(255,122,89,.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text);
+  }
+
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .footer-note {
+    margin-top: 46px;
+    text-align: center;
+    font-size: 12px;
+    color: #5d6679;
+  }
+
+  /* ---------- 证据柜 ---------- */
+  .drawer-btn {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 40;
+    background: var(--card);
+    border: 1px solid rgba(255,184,77,.5);
+    color: var(--accent);
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease, background .15s ease;
+  }
+
+  .drawer-btn:hover { transform: translateY(-2px); background: rgba(255,184,77,.12); }
+
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(5,6,10,.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .drawer.show { display: flex; }
+
+  .drawer-panel {
+    width: 100%;
+    max-width: 620px;
+    max-height: 72vh;
+    overflow-y: auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 28px;
+    animation: rise .3s ease both;
+  }
+
+  .drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .drawer-head h3 { font-size: 17px; font-weight: 800; }
+
+  #drawerClose {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .card-item {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .card-item .c-emoji { font-size: 24px; display: block; margin-bottom: 4px; }
+  .card-item .c-name { font-weight: 800; font-size: 13px; }
+  .card-item .c-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  .card-item.locked { opacity: .45; filter: saturate(.3); }
+  .card-item.locked .c-desc { color: #5d6679; }
+
+  .card-item .thumb {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    cursor: zoom-in;
+    display: block;
+  }
+
+  #lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgba(5,6,10,.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+
+  #lightbox.show { display: flex; }
+
+  #lightbox img {
+    max-width: 92vw;
+    max-height: 88vh;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ---------- Toast ---------- */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 34px;
+    transform: translateX(-50%) translateY(20px);
+    background: #242b3d;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease, transform .25s ease, visibility .25s;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  #toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 520px) {
+    main { padding-top: 30px; }
+    .node { padding-left: 58px; }
+    .timeline::before { left: 21px; }
+    .dot { left: 12px; }
+    .node-card { padding: 16px 16px; }
+    .header-title { font-size: 13px; }
+    .heart-pill { font-size: 11px; padding: 3px 9px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 开场 -->
+  <div id="splash">
+    <div class="splash-inner">
+      <span class="kicker">2026 TI 杯 · H 题</span>
+      <h1>1w3 的故事</h1>
+      <p class="sub">从曹梦腾无人管的大一，讲到自费一万三、熬夜三四天的 TI 杯。<br>按顺序点开节点，中间有对话选项、小游戏和隐藏评价。<br>全程盯好「道心值」，也注意别把「老刁好感度」刷满。</p>
+      <button id="startBtn">开始复盘 ▶</button>
+      <p class="splash-note">🖱️ 也可以点屏幕上任意地方继续</p>
+    </div>
+  </div>
+
+  <!-- 头部 -->
+  <header>
+    <div class="header-inner">
+      <div class="header-title">TI 杯 <span>·</span> 1w3</div>
+      <div class="progress-wrap"><div id="progressBar"></div></div>
+      <div id="progressText">0 / 14</div>
+      <div class="heart-pill" id="heartPill">❤️ <span id="heartVal">100</span></div>
+      <div class="heart-pill" id="jiaoPill">🎭 <span id="jiaoVal">100</span></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>先认识一下当事人</h2>
+      <p>这张图讲的是 ys（元帅）和 cmt（曹梦腾）参赛前后的事。涉及人物先放这儿，后面会不断出现。名字来自语音转写，可能有出入。</p>
+
+      <div class="cast">
+        <div class="cast-card">
+          <span class="emoji">🔥</span>
+          <div class="name">ys · 元帅</div>
+          <div class="role">主视角 · 不是电院的，敢跟老刁闹僵 · 明年当队长</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">😮‍💨</span>
+          <div class="name">cmt · 曹梦腾</div>
+          <div class="role">电院大一 · 通信转自动化 · 被老刁管得到，只能点头</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">🛡️</span>
+          <div class="name">老刁</div>
+          <div class="role">带队老师 · "大一先别打" · 一个电话取消 A · 报销 500→600 · 护犊子</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">🛋️</span>
+          <div class="name">第三人 · 23 电子</div>
+          <div class="role">老刁指派 · 天天挂科 · 开赛没来</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">🤝</span>
+          <div class="name">91刘 · 刘鑫宇</div>
+          <div class="role">22 级 · 奖金九一开，他拿九成 · 老刁的技术外援</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">🧭</span>
+          <div class="name">兰晶胜 · 兰部长</div>
+          <div class="role">负责分队 · 女生退队时没人通知他</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">🧮</span>
+          <div class="name">刘宇辰</div>
+          <div class="role">PIT 23 级学长 · 帮谈 A · 明年帮忙挂名</div>
+        </div>
+        <div class="cast-card">
+          <span class="emoji">🎬</span>
+          <div class="name">群演组</div>
+          <div class="role">关鹏（能力强）· 乔文硕（对外·风评差）· 赵通 · 那个女生</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="timeline" id="timeline"></section>
+
+    <!-- 结局 -->
+    <section class="finale" id="finale">
+      <span class="flag">🏁</span>
+      <h2>复盘完成</h2>
+      <div class="title-banner" id="titleBanner">🏅 道心微澜</div>
+      <p>13000 是自己的钱，三四天的夜是自己熬的，题是自己做的。奖状是谁的、奖金给谁，大家心里都有数。明年，换老师，不挂老刁。</p>
+      <p class="one-liner">💬 一句话总结：<b>老刁这个逼养的。</b></p>
+      <div class="stats">
+        <span>道心 <b id="finalHeart">100</b></span>
+        <span>老刁好感 <b id="finalJiao">100</b></span>
+        <span>证据 <b id="finalCards">0</b> / 15</span>
+        <span>称号 <b id="finalTitle">-</b></span>
+      </div>
+      <div class="eval-box">
+        <h4>🎭 当事人评价</h4>
+        <p id="evalLine"></p>
+      </div>
+      <div class="finale-actions">
+        <button class="btn btn-primary" id="copyBtn">📋 复制全文</button>
+        <button class="btn btn-ghost" id="drawerBtn2">📦 打开证据柜</button>
+        <button class="btn btn-ghost" id="restartBtn">↺ 再走一遍</button>
+      </div>
+    </section>
+
+    <p class="footer-note">本页面为个人记录，按当事人叙述整理 · 选择题与小游戏仅为玩梗，真实经过以节点文字为准 · 2026</p>
+  </main>
+
+  <!-- 证据柜 -->
+  <button class="drawer-btn" id="drawerBtn">📦 证据柜 (0 / 15)</button>
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h3>📦 证据柜 <span id="drawerCount" style="color:var(--text-dim);font-size:13px;"></span></h3>
+        <button id="drawerClose">✕</button>
+      </div>
+      <div class="card-grid" id="cardGrid"></div>
+    </div>
+  </div>
+
+  <div id="lightbox"><img id="lightboxImg" alt="证据截图"></div>
+
+  <div id="toast"></div>
+
+<script>
+  const STORY = [
+    /* ---------- 序章 ---------- */
+    {
+      type: "chapter",
+      divider: "序章 · 曹梦腾的前传",
+      emoji: "🏫",
+      title: "PIT 大一：没人管的菜鸟",
+      text: "PIT 那边没什么培养机制，也没太多人管。大一新生分了个「负责学长」，但 cmt 不好意思去问。负责的人里，关鹏能力比较强；另一个叫乔文硕，管对外工作，风评很差、情商低、跟老师关系也不好。",
+      quote: "PIT 的「培养机制」≈ 没有机制。",
+      card: { emoji: "🏫", name: "空气培养手册", desc: "PIT 大一：没有培养机制" },
+      effect: -4
+    },
+    {
+      type: "chapter",
+      emoji: "🔧",
+      title: "自学 + 老刁 + 91刘",
+      text: "没什么人能问，cmt 只能自学 STM32 / 51。这时候认识了老刁，从此大事小事都听老刁的，有问题也问老刁。老刁的「解决办法」是让他去找刘鑫宇。刘鑫宇是 22 级的，圈里人称「91刘」——奖金九一开，他拿九成，一成给别人。",
+      quote: "91刘 = 奖金他拿 9 成，剩 1 成分出去。",
+      card: { emoji: "🔧", name: "自学笔记", desc: "STM32 / 51 全靠自己啃" },
+      effect: -5
+    },
+    {
+      type: "dialogue",
+      emoji: "🧩",
+      title: "组队：从 TIA 到元帅队",
+      text: "cmt 本来想打 TIA，去问老刁，结果被安排得明明白白。后来元帅（ys）这边要人，兰部长（兰晶胜）给 cmt 分了队，最后分到了元帅队。",
+      scene: { spEmoji: "🎭", speaker: "老刁", line: "你大一先别打，先等着。" },
+      question: "你要怎么接？",
+      options: [
+        { label: "好，那我等", reply: "嗯，听话。", effect: -5, jiaoEffect: 5 },
+        { label: "我想打 A 题，帮我想想办法", reply: "我说了别打就别打。", effect: -8, jiaoEffect: -5 },
+        { label: "那……元帅队缺人，我能去吗？", reply: "行，让兰部长给你分过去。", effect: 2, jiaoEffect: -2 }
+      ],
+      card: { emoji: "🧩", name: "分队记录", desc: "兰部长（兰晶胜）：分到元帅队" },
+      effect: 0
+    },
+    {
+      type: "chapter",
+      emoji: "📜",
+      title: "空降的第三人",
+      text: "队伍本来还有第三个队员——一个女生。但她家里不让留在学校，人就走了。这事 cmt 没跟兰部长说，谁都不知道。他转头找老刁，老刁给找了一个人：23 电子的，风评更差，什么都不会，天天挂科。",
+      quote: "走了一个没来的，来了一个更离谱的。",
+      card: { emoji: "📜", name: "空降名单", desc: "23 电子 · 天天挂科" },
+      effect: -8
+    },
+    {
+      type: "dialogue",
+      emoji: "📅",
+      title: "开赛：人没来",
+      text: "比赛开始，ys 去看他们两队。结果：那个人根本不来。赛前 cmt 跟老刁说过，老刁拍胸脯保证。同学那边说，可能是……（原话没说完）。",
+      scene: { spEmoji: "🎭", speaker: "老刁", line: "今天让他来，放心。" },
+      question: "比赛日到了，你怎么办？",
+      options: [
+        { label: "信了，等他来", reply: "一天结束，人还是没来。", effect: -8, jiaoEffect: 0 },
+        { label: "不行，得让他现在就来", reply: "催什么催，他会来的。", effect: -5, jiaoEffect: -10 },
+        { label: "算了，我们俩也能打", reply: "那你们俩先打吧。", effect: 3, jiaoEffect: -5 }
+      ],
+      card: { emoji: "📅", name: "出勤表", desc: "第三人：全程缺席" },
+      effect: 0
+    },
+    {
+      type: "chapter",
+      emoji: "🔄",
+      title: "转专业与道心",
+      text: "cmt 因为认识老刁、也知道赵通很屌（大学期间打过 M），就从通信转到了自动化。可他之前在通信的朋友，跑去搞 IT / 人工智能，什么都不会也能躺个国奖。这让 cmt 有点道心崩，跑来问 ys：「这个比赛，含金量到底怎么样？」",
+      quote: "朋友们躺着拿国奖，我在这肝单片机？道心有点崩。",
+      card: { emoji: "🔄", name: "转专业申请表", desc: "通信 → 自动化" },
+      effect: -8
+    },
+
+    /* ---------- 正传 ---------- */
+    {
+      type: "game",
+      divider: "正传 · 1w3 的 TI 杯",
+      emoji: "🚀",
+      title: "缘起：自费 1w3 的熬夜",
+      text: "2026 年 TI 杯，ys 和 cmt 组队做 H 题。报名、器件、耗材全是自己掏钱，一共花了 13000。为把题目肝完，连续熬夜了三四个晚上。现在两组都还算顺利：一组在买东西，另一组前两轮已经差不多。8/1 晚上 8 点封箱，封完可以假装封个箱，还有一夜——因为转天早上才发走，时间挺充裕。来，体验一下那一夜：",
+      gameIntro: "6 秒内发电 25 次，模拟熬到最后的那个夜。",
+      card: { emoji: "🧾", name: "自费账单", desc: "报名 + 器件 + 耗材 = 13000" },
+      effect: -8
+    },
+    {
+      type: "dialogue",
+      emoji: "🧮",
+      title: "沟通：老刁的「原意」",
+      text: "赛后，两个人去找带队老师老刁沟通，结果聊爆了。",
+      scene: { spEmoji: "🎭", speaker: "老刁", line: "把他叫过来就是纯粹挂个名，仅此而已，不用帮你们任何东西。不过奖状和奖金，该给他的还是要给。" },
+      question: "老刁要把奖状和奖金分给那个没来的人。如果是你，怎么办？",
+      options: [
+        { label: "多一事不如少一事，答应", reply: "这就对了。", effect: -8, jiaoEffect: 8 },
+        { label: "先应着，回去再摇人", reply: "行，就这么定。", effect: -3, jiaoEffect: 3 },
+        { label: "当场摊牌：这奖我们不要了", reply: "……你再说一遍？", effect: -12, jiaoEffect: -25 }
+      ],
+      card: { emoji: "📸", name: "微信截图", desc: "当事人提供 · 老刁相关", img: "evidence/diao_chat.jpg" },
+      effect: 0
+    },
+    {
+      type: "chapter",
+      emoji: "💰",
+      title: "拉扯：500 变 600",
+      text: "老刁原本只给报销 500 块。商量之后，改成报销 600。多出来的那 100 块，据学长说，应该是从另一队的报销经费里拨出来的。",
+      quote: "600 里面多出来的 100，听说从别的队的经费里拨。",
+      card: { emoji: "💰", name: "报销回执", desc: "500 → 600，多的 100 从别的队拨" },
+      effect: -4
+    },
+    {
+      type: "chapter",
+      emoji: "🕊️",
+      title: "转机：学长帮忙谈 A",
+      text: "比赛打完那一晚，刘宇辰学长帮忙商量：第三人原本同意 A 掉 13000 成本的一半（也就是出 6500 分摊费用）。结果第二天，老刁一个电话打过来，那一半 A 就没了。",
+      quote: "原来说好的 A 一半，第二天老刁一个电话，没了。",
+      card: { emoji: "☎️", name: "通话记录", desc: "老刁来电：A 一半作废" },
+      effect: 6
+    },
+    {
+      type: "chapter",
+      emoji: "🛡️",
+      title: "爆发：老刁护犊子",
+      text: "老刁纯护犊子。最终谈定的结果是：不给第三人这个奖——奖状不发，不给复印件，也不给截图；奖金同样不分给他。老刁原本还想着分奖金，闹了这一出之后说：你们不想分，可以不分。",
+      quote: "老刁：奖状不会给他，复印件、截图都不会给。奖金你们不想分，可以不分。",
+      card: { emoji: "🏆", name: "奖状处理单", desc: "不发 · 不复印 · 不截图 · 不分奖金" },
+      effect: -10
+    },
+    {
+      type: "chapter",
+      emoji: "💸",
+      title: "结果：各花各的钱",
+      text: "老刁管得到 cmt（曹梦腾），cmt 不能和老刁闹太僵，只能点头答应。自费花的钱，两个人也都只能自己解决。ys 不是电院的，老刁管不着，所以 ys 直接和老刁闹僵了。",
+      quote: "cmt 只能同意；ys 直接闹僵。钱，各花各的。",
+      card: { emoji: "🧊", name: "自费账单 ×2", desc: "各花各的钱，自己解决" },
+      effect: -6
+    },
+    {
+      type: "chapter",
+      emoji: "📢",
+      title: "口径：被「硬拉来」的 cmt",
+      text: "明年老刁要是再叫 cmt 打电赛，cmt 直接推掉，说不想打，然后来 ys 的队。被问起来，cmt 就统一口径：他也不想主动参加，是被 ys 硬拉过来的。这样老刁那边就能推掉。",
+      quote: "被问起来就说：不想主动参加，是被硬拉来的。",
+      card: { emoji: "📣", name: "统一口径", desc: "「我是被硬拉来的」" },
+      effect: -3
+    },
+    {
+      type: "dialogue",
+      emoji: "🌱",
+      title: "明年：换老师，不挂老刁",
+      text: "明年电赛，ys 当队长，cmt 入队。刘宇辰学长和另一位大二的电子学长，会帮忙挂名电子的主任。反正明年，绝对不挂老刁。",
+      quote: "明年绝对不挂老刁。",
+      scene: { spEmoji: "🔥", speaker: "ys（内心）", line: "明年当队长，挂哪个老师，你来拍板。" },
+      question: "如果你是 ys，明年挂哪个老师？",
+      options: [
+        { label: "挂电子主任，绝对不挂老刁", reply: "正解：老师有的是，老刁就一个。", effect: 15, jiaoEffect: -30 },
+        { label: "还是挂老刁吧，求稳", reply: "……图啥呢？奖状不想发了是吧？", effect: -20, jiaoEffect: 20 },
+        { label: "明年不打了，省钱", reply: "1w3 都交了，不打白不打。", effect: -10, jiaoEffect: 5 }
+      ],
+      card: { emoji: "📌", name: "明年作战图", desc: "挂电子主任，不挂老刁" },
+      effect: 0
+    }
+  ];
+
+  const BADGE = { emoji: "🏅", name: "夜之战士", desc: "小游戏通关：那一夜你发电成功" };
+  const TOTAL_CARDS = STORY.filter((s) => s.card).length + 1;
+
+  const timeline = document.getElementById("timeline");
+  const finale = document.getElementById("finale");
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+  const heartPill = document.getElementById("heartPill");
+  const heartVal = document.getElementById("heartVal");
+  const jiaoPill = document.getElementById("jiaoPill");
+  const jiaoVal = document.getElementById("jiaoVal");
+  const toast = document.getElementById("toast");
+  const splash = document.getElementById("splash");
+  const drawer = document.getElementById("drawer");
+  const drawerBtn = document.getElementById("drawerBtn");
+  const drawerCount = document.getElementById("drawerCount");
+  const cardGrid = document.getElementById("cardGrid");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+
+  let current = -1;
+  let heart = 100;
+  let jiao = 100;
+  let collected = new Set();
+  let answered = {};
+  let game = { active: false, nodeIdx: -1, clicks: 0, timer: null };
+  let nodes = [];
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove("show"), 2200);
+  }
+
+  function applyHeart(n) {
+    heart = clamp(heart + n, 0, 100);
+    heartVal.textContent = heart;
+    heartPill.classList.toggle("heart-high", heart >= 70);
+    heartPill.classList.toggle("heart-mid", heart >= 40 && heart < 70);
+    heartPill.classList.toggle("heart-low", heart < 40);
+  }
+
+  function applyJiao(n) {
+    jiao = clamp(jiao + n, 0, 100);
+    jiaoVal.textContent = jiao;
+    jiaoPill.classList.toggle("heart-high", jiao >= 70);
+    jiaoPill.classList.toggle("heart-mid", jiao >= 40 && jiao < 70);
+    jiaoPill.classList.toggle("heart-low", jiao < 40);
+  }
+
+  function buildInteractive(item, i) {
+    const sceneHtml = item.scene
+      ? `<div class="dialog"><div class="d-speaker">${item.scene.spEmoji} ${item.scene.speaker}</div><div class="d-line">「${item.scene.line}」</div></div>`
+      : "";
+    return `
+      <div class="quiz" data-idx="${i}">
+        ${sceneHtml}
+        <p class="q-title">❓ ${item.question}</p>
+        <div class="options">
+          ${item.options.map((o, oi) =>
+            `<button class="option" data-idx="${i}" data-opt="${oi}">${o.label}</button>`
+          ).join("")}
+        </div>
+        <p class="reply"></p>
+      </div>`;
+  }
+
+  function buildGame(i) {
+    return `
+      <div class="game" data-idx="${i}">
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">${STORY[i].gameIntro}</p>
+        <button class="game-start">开始熬夜 🌙</button>
+        <div class="game-meter"><div class="game-fill"></div></div>
+        <div class="game-row">
+          <span class="game-timer">剩余 6 秒</span>
+          <span class="game-count">发电 0 / 25</span>
+        </div>
+        <button class="game-fire" disabled>💪 发电！</button>
+        <p class="game-result"></p>
+      </div>`;
+  }
+
+  function renderTimeline() {
+    STORY.forEach((item, i) => {
+      const node = document.createElement("article");
+      node.className = "node locked";
+      const isBlocked = item.type === "quiz" || item.type === "dialogue" || item.type === "game";
+      node.innerHTML = `
+        ${item.divider ? `<div class="divider"><span>${item.divider}</span></div>` : ""}
+        <div class="dot"></div>
+        <div class="node-card">
+          <div class="node-head">
+            <span class="badge">${String(i + 1).padStart(2, "0")}</span>
+            <h3>${item.emoji} ${item.title}</h3>
+          </div>
+          <div class="node-body">
+            <p>${item.text}</p>
+            ${item.quote ? `<blockquote>${item.quote}</blockquote>` : ""}
+            ${item.type === "quiz" || item.type === "dialogue" ? buildInteractive(item, i) : ""}
+            ${item.type === "game" ? buildGame(i) : ""}
+            <div class="node-foot">
+              <span class="hint">${i === STORY.length - 1 ? "最后一节 🏁" : "看完这一节，解锁下一节"}</span>
+              ${i === STORY.length - 1 ? "" :
+                `<button class="next-btn ${isBlocked ? "hidden" : ""}" data-next="${i + 1}">下一节 ↓</button>`}
+            </div>
+          </div>
+        </div>`;
+      timeline.appendChild(node);
+      nodes.push(node);
+    });
+  }
+
+  function collectCards(upTo) {
+    for (let i = 0; i <= upTo; i++) {
+      const c = STORY[i].card;
+      if (c) collected.add(c.name);
+    }
+    updateDrawer();
+  }
+
+  function updateDrawer() {
+    const n = collected.size;
+    drawerBtn.textContent = `📦 证据柜 (${n} / ${TOTAL_CARDS})`;
+    if (drawerCount) drawerCount.textContent = `${n} / ${TOTAL_CARDS}`;
+    const all = STORY.filter((s) => s.card).map((s) => s.card).concat([BADGE]);
+    cardGrid.innerHTML = all.map((c) => {
+      const got = collected.has(c.name);
+      return `
+        <div class="card-item ${got ? "" : "locked"}">
+          <span class="c-emoji">${got ? c.emoji : "❓"}</span>
+          <div class="c-name">${got ? c.name : "未解锁"}</div>
+          <div class="c-desc">${got ? c.desc : "继续点开节点收集"}</div>
+          ${got && c.img ? `<img class="thumb" src="${c.img}" alt="${c.name}" data-src="${c.img}">` : ""}
+        </div>`;
+    }).join("");
+  }
+
+  function showNext(node) {
+    const btn = node.querySelector(".next-btn");
+    if (btn) btn.classList.remove("hidden");
+  }
+
+  function openUpTo(index, shouldScroll) {
+    if (index < 0 || index >= STORY.length) return;
+    const from = current + 1;
+    current = Math.max(current, index);
+    for (let i = from; i <= current; i++) {
+      if (STORY[i].effect) applyHeart(STORY[i].effect);
+    }
+    update();
+    nodes.slice(0, current + 1).forEach((n) => n.classList.add("open"));
+    collectCards(current);
+    if (shouldScroll !== false) {
+      requestAnimationFrame(() => {
+        nodes[current].scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+    if (current === STORY.length - 1) {
+      finale.classList.add("show");
+      showFinale();
+      if (shouldScroll !== false) {
+        setTimeout(() => finale.scrollIntoView({ behavior: "smooth", block: "center" }), 550);
+      }
+    }
+  }
+
+  function unlock(index) {
+    if (index > current + 1) return;
+    openUpTo(index, true);
+  }
+
+  function update() {
+    nodes.forEach((node, i) => {
+      const unlocked = i <= current;
+      node.classList.toggle("unlocked", unlocked);
+      node.classList.toggle("locked", !unlocked);
+      node.querySelector(".node-card").classList.toggle("clickable", unlocked);
+    });
+    timeline.classList.toggle("done", current === STORY.length - 1);
+    const n = Math.min(current + 1, STORY.length);
+    progressBar.style.width = (n / STORY.length * 100) + "%";
+    progressText.textContent = `${n} / ${STORY.length}`;
+  }
+
+  function computeTitle() {
+    if (heart >= 65) return { emoji: "😤", name: "道心金刚 · 心如磐石" };
+    if (heart >= 45) return { emoji: "🌊", name: "道心微澜 · 还能打" };
+    if (heart >= 25) return { emoji: "💔", name: "道心裂了 · 但没碎" };
+    return { emoji: "🫠", name: "道心粉碎 · 已麻" };
+  }
+
+  function showFinale() {
+    const t = computeTitle();
+    document.getElementById("titleBanner").textContent = `${t.emoji} ${t.name}`;
+    document.getElementById("finalHeart").textContent = heart;
+    document.getElementById("finalJiao").textContent = jiao;
+    document.getElementById("finalCards").textContent = collected.size;
+    document.getElementById("finalTitle").textContent = t.name;
+    document.getElementById("evalLine").textContent = computeEval();
+  }
+
+  function computeEval() {
+    const parts = [];
+    if (jiao <= 20) parts.push("老刁眼里：刺头，明年别来我这。");
+    else if (jiao <= 50) parts.push("老刁眼里：不熟，爱咋咋地。");
+    else if (jiao <= 80) parts.push("老刁眼里：还行，能处。");
+    else parts.push("老刁眼里：好大儿，明年继续挂我这吧。");
+    if (heart >= 65) parts.push("外人眼里：硬刚流主角，奖状自己拿，老师自己挑。");
+    else if (heart >= 45) parts.push("外人眼里：心态稳，活也干完了。");
+    else if (heart >= 25) parts.push("外人眼里：道心裂了，但活干完了。");
+    else parts.push("外人眼里：已麻，建议明年退坑保平安。");
+    return parts.join(" ");
+  }
+
+  function handleOption(idx, oi) {
+    if (answered[idx] !== undefined) return;
+    answered[idx] = oi;
+    const node = nodes[idx];
+    const quiz = node.querySelector(".quiz");
+    const opts = quiz.querySelectorAll(".option");
+    opts.forEach((b, bi) => {
+      b.disabled = true;
+      if (bi === oi) b.classList.add("chosen");
+    });
+    const item = STORY[idx];
+    const opt = item.options[oi];
+    const reply = quiz.querySelector(".reply");
+    if (item.scene) {
+      reply.innerHTML = `💬 你：「${opt.label}」<br>${item.scene.spEmoji} ${item.scene.speaker}：「${opt.reply}」`;
+    } else {
+      reply.textContent = `你：「${opt.label}」→ ${opt.reply}`;
+    }
+    applyHeart(opt.effect);
+    applyJiao(opt.jiaoEffect || 0);
+    showNext(node);
+  }
+
+  function startGame(idx) {
+    if (game.active) return;
+    const g = nodes[idx].querySelector(".game");
+    g.querySelector(".game-start").style.display = "none";
+    g.querySelector(".game-fire").disabled = false;
+    game = { active: true, nodeIdx: idx, clicks: 0, timer: null };
+    const startTime = Date.now();
+    game.timer = setInterval(() => {
+      const remain = Math.max(0, 6000 - (Date.now() - startTime));
+      g.querySelector(".game-timer").textContent = `剩余 ${(remain / 1000).toFixed(1)} 秒`;
+      if (remain <= 0) finishGame(idx);
+    }, 100);
+  }
+
+  function fireGame() {
+    if (!game.active) return;
+    game.clicks++;
+    const g = nodes[game.nodeIdx].querySelector(".game");
+    g.querySelector(".game-fill").style.width = Math.min(100, game.clicks / 25 * 100) + "%";
+    g.querySelector(".game-count").textContent = `发电 ${game.clicks} / 25`;
+  }
+
+  function finishGame(idx) {
+    clearInterval(game.timer);
+    game.active = false;
+    const g = nodes[idx].querySelector(".game");
+    g.querySelector(".game-fire").disabled = true;
+    const win = game.clicks >= 25;
+    const res = g.querySelector(".game-result");
+    if (win) {
+      res.textContent = "✅ 电发完了，题肝完了！夜之战士 +1（道心 +10）";
+      res.classList.add("good");
+      applyHeart(10);
+      collected.add(BADGE.name);
+      updateDrawer();
+    } else {
+      res.textContent = "❌ 手速不够，电量耗尽……（道心 -8）";
+      res.classList.add("bad");
+      applyHeart(-8);
+    }
+    showNext(nodes[idx]);
+  }
+
+  // 点击节点 / 选项 / 游戏
+  timeline.addEventListener("click", (e) => {
+    const nextBtn = e.target.closest(".next-btn");
+    if (nextBtn) { unlock(Number(nextBtn.dataset.next)); return; }
+
+    const opt = e.target.closest(".option");
+    if (opt) { handleOption(Number(opt.dataset.idx), Number(opt.dataset.opt)); return; }
+
+    const gs = e.target.closest(".game-start");
+    if (gs) { startGame(nodes.indexOf(gs.closest(".node"))); return; }
+
+    const gf = e.target.closest(".game-fire");
+    if (gf) { fireGame(); return; }
+
+    const card = e.target.closest(".node-card");
+    if (!card) return;
+    const node = card.closest(".node");
+    const idx = nodes.indexOf(node);
+    if (idx > current) {
+      showToast("🔒 先点开上一节，再往下看");
+      return;
+    }
+    if (idx === current && !node.classList.contains("open")) {
+      node.classList.add("open");
+      node.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+
+  // 键盘支持
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (!splash.classList.contains("hidden")) { start(); return; }
+    if (game.active) { fireGame(); return; }
+    if (current < STORY.length - 1) unlock(current + 1);
+  });
+
+  function start() {
+    splash.classList.add("hidden");
+    unlock(0);
+  }
+
+  document.getElementById("startBtn").addEventListener("click", start);
+  splash.addEventListener("click", (e) => {
+    if (!e.target.closest("#startBtn")) start();
+  });
+
+  // 证据柜
+  function toggleDrawer(show) {
+    drawer.classList.toggle("show", show);
+  }
+  drawerBtn.addEventListener("click", () => toggleDrawer(true));
+  document.getElementById("drawerBtn2").addEventListener("click", () => toggleDrawer(true));
+  document.getElementById("drawerClose").addEventListener("click", () => toggleDrawer(false));
+  drawer.addEventListener("click", (e) => {
+    if (e.target === drawer) toggleDrawer(false);
+  });
+
+  cardGrid.addEventListener("click", (e) => {
+    const thumb = e.target.closest(".thumb");
+    if (!thumb) return;
+    lightboxImg.src = thumb.dataset.src;
+    lightbox.classList.add("show");
+  });
+  lightbox.addEventListener("click", () => lightbox.classList.remove("show"));
+
+  document.getElementById("restartBtn").addEventListener("click", () => {
+    if (game.timer) clearInterval(game.timer);
+    game = { active: false, nodeIdx: -1, clicks: 0, timer: null };
+    heart = 100;
+    jiao = 100;
+    collected = new Set();
+    answered = {};
+    current = -1;
+    timeline.innerHTML = "";
+    nodes = [];
+    renderTimeline();
+    finale.classList.remove("show");
+    heartVal.textContent = heart;
+    heartPill.className = "heart-pill";
+    jiaoVal.textContent = jiao;
+    jiaoPill.className = "heart-pill";
+    update();
+    updateDrawer();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => unlock(0), 450);
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const t = computeTitle();
+    const lines = [
+      "【2026 TI杯 · H题 全流程复盘】",
+      "",
+      ...STORY.map((s, i) =>
+        `${i + 1}. ${s.title}\n   ${s.text}${s.scene ? `\n   ${s.scene.speaker}：「${s.scene.line}」` : ""}`
+      ),
+      "",
+      `结算：道心 ${heart} · 老刁好感 ${jiao} · 称号「${t.name}」`,
+      `评价：${computeEval()}`,
+      "结局：13000 是自己的钱，三四天的夜是自己熬的，题是自己做的。奖状是谁的、奖金给谁，大家心里都有数。明年换老师，不挂老刁。",
+      "一句话总结：老刁这个逼养的。"
+    ].join("\n");
+    try {
+      await navigator.clipboard.writeText(lines);
+      showToast("✅ 全文已复制，直接粘贴发给别人");
+    } catch {
+      showToast("❌ 复制失败，长按选中文字手动复制吧");
+    }
+  });
+
+  // URL 深链：?step=3 直接解锁到第 3 节；?full=1 直接展示全部（含结局）
+  const params = new URLSearchParams(location.search);
+  if (params.get("full") === "1") {
+    splash.classList.add("hidden");
+    openUpTo(STORY.length - 1, false);
+  } else {
+    const step = parseInt(params.get("step"), 10);
+    if (Number.isFinite(step) && step >= 1 && step <= STORY.length) {
+      splash.classList.add("hidden");
+      openUpTo(step - 1, false);
+    }
+  }
+
+  renderTimeline();
+  update();
+  updateDrawer();
+</script>
+</body>
+</html>
