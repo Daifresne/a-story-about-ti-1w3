@@ -41,6 +41,141 @@
 
   button { font-family: inherit; cursor: pointer; }
 
+  /* ---------- 口令页 ---------- */
+  #gate {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+      radial-gradient(800px 400px at 50% 0%, rgba(255,184,77,.08), transparent 60%),
+      radial-gradient(600px 300px at 50% 100%, rgba(255,122,89,.08), transparent 60%),
+      var(--bg);
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+
+  #gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .gate-inner {
+    width: 100%;
+    max-width: 540px;
+    text-align: center;
+    animation: rise .8s ease both;
+  }
+
+  .gate-card {
+    position: relative;
+    margin-top: 4px;
+    background: linear-gradient(180deg, rgba(26,31,46,.95), rgba(20,24,35,.95));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 26px 22px 24px;
+    overflow: hidden;
+  }
+
+  .gate-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,184,77,.65), transparent);
+  }
+
+  .gate-prompt {
+    font-size: clamp(15px, 3.6vw, 19px);
+    font-weight: 800;
+    letter-spacing: .04em;
+    line-height: 1.7;
+  }
+
+  .gate-prompt .blank {
+    color: var(--accent);
+    letter-spacing: .12em;
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+
+  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: .25; } }
+
+  .gate-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 5px 5px 5px 14px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+
+  .gate-field:focus-within {
+    border-color: rgba(255,184,77,.6);
+    box-shadow: 0 0 0 3px rgba(255,184,77,.10);
+  }
+
+  .gate-field.shake { animation: shake .4s ease; border-color: var(--bad); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(3px); }
+  }
+
+  .gate-caret { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+
+  #gateInput {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    letter-spacing: .06em;
+    padding: 11px 0;
+  }
+
+  #gateInput::placeholder { color: #5d6679; letter-spacing: normal; }
+
+  #gateBtn {
+    flex-shrink: 0;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #221303;
+    font-size: 14px;
+    font-weight: 800;
+    border: none;
+    border-radius: 9px;
+    padding: 11px 20px;
+    transition: transform .15s ease, filter .15s ease;
+  }
+
+  #gateBtn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+  #gateBtn:active { transform: scale(.97); }
+
+  .gate-msg {
+    margin-top: 12px;
+    font-size: 13px;
+    min-height: 1.4em;
+    color: var(--bad);
+  }
+
+  .gate-msg.ok { color: var(--good); }
+
+  .gate-note {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #5d6679;
+  }
+
   /* ---------- 开场 ---------- */
   #splash {
     position: fixed;
@@ -56,6 +191,9 @@
   }
 
   #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  /* 隐藏时禁止入场动画，保证口令通过后重新显示时动画从头播一遍 */
+  #splash.hidden .splash-inner { animation: none; }
 
   .splash-inner {
     text-align: center;
@@ -635,6 +773,363 @@
     color: #5d6679;
   }
 
+  /* ---------- 彩蛋：功德木鱼 ---------- */
+  .merit {
+    display: none;
+    margin-top: 26px;
+    background:
+      radial-gradient(500px 240px at 50% 0%, rgba(255,184,77,.07), transparent 70%),
+      var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 20px 10px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .merit.show { display: block; animation: fadeIn .6s ease both; }
+
+  .merit h3 { font-size: 17px; font-weight: 800; }
+  .merit .merit-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+  .merit .merit-sub b { color: var(--accent); }
+
+  .merit-count {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    border: 1px solid rgba(255,184,77,.4);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 敲到 100 下，上半身从地上坐起来（腿不动） */
+  .merit-svg .m-upper {
+    transform-box: view-box;
+    transform-origin: 140px 192px;
+    transition: transform .55s cubic-bezier(.2,.8,.3,1.15);
+  }
+
+  .merit.sitting .m-upper { transform: rotate(-22deg); }
+
+  /* 吐槽气泡：一直挂着他当前的松口进度，升级时才动一下 */
+  .m-say {
+    opacity: 0;
+    transition: opacity .3s ease;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .m-say.show { opacity: 1; }
+  .m-say.pop { animation: sayPop .5s ease; }
+
+  @keyframes sayPop {
+    0%   { transform: scale(.93); }
+    55%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  .m-say-bg { fill: var(--bg-soft); stroke: rgba(255,184,77,.5); stroke-width: 2; }
+  /* 人坐起来之后头会顶到气泡尾巴，把小圆点收掉 */
+  .m-say-dot { transition: opacity .3s ease; }
+  .merit.sitting .m-say-dot { opacity: 0; }
+  .m-say-text {
+    fill: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .merit-svg {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .m-ground { stroke: var(--line); stroke-width: 2; }
+  .m-shadow { fill: rgba(0,0,0,.35); }
+  .m-limb  { fill: #343c56; stroke: #4d5779; stroke-width: 2; }
+  .m-body  { fill: #3b4460; stroke: #5a6591; stroke-width: 2; }
+  .m-head  { fill: #4a5478; stroke: #6a76a3; stroke-width: 2; }
+  .m-eye   { stroke: #cfd6ea; stroke-width: 2.4; stroke-linecap: round; fill: none; }
+
+  .m-diao {
+    fill: var(--accent);
+    font-size: 40px;
+    font-weight: 900;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .muyu { cursor: pointer; }
+  .muyu-base  { fill: #b57f42; stroke: #7c5527; stroke-width: 2.5; }
+  .muyu-curl  { fill: #c99050; stroke: #7c5527; stroke-width: 2; }
+  .muyu-slit  { stroke: #4a3016; stroke-width: 5; stroke-linecap: round; fill: none; }
+  .muyu-gloss { fill: rgba(255,255,255,.16); }
+  .mallet-stick { stroke: #c99050; stroke-width: 7; stroke-linecap: round; }
+  .mallet-head  { fill: #e2ae6a; stroke: #7c5527; stroke-width: 2; }
+
+  /* 入场：人从左边摊进来，木鱼从上面落下来 */
+  .merit.show .figure { animation: meritIn .7s cubic-bezier(.2,.8,.3,1.1) both; }
+  .merit.show .muyu   { animation: muyuIn .6s .18s ease-out both; }
+
+  @keyframes meritIn {
+    from { opacity: 0; transform: translateX(-30px) rotate(-3deg); }
+    to   { opacity: 1; transform: translateX(0) rotate(0deg); }
+  }
+
+  @keyframes muyuIn {
+    0%   { opacity: 0; transform: translateY(-46px); }
+    65%  { opacity: 1; transform: translateY(5px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 敲一下：木槌砸下去、木鱼压扁一点、人抖一下 */
+  .muyu.hit .mallet   { animation: knock .26s ease-out; }
+  .muyu.hit .muyu-body { animation: muyuSquash .26s ease-out; }
+  .figure-inner.twitch { animation: twitch .3s ease; }
+
+  .merit-svg .figure,
+  .merit-svg .figure-inner,
+  .merit-svg .mallet,
+  .merit-svg .muyu-body { transform-box: view-box; }
+
+  .merit-svg .figure       { transform-origin: 196px 198px; }
+  .merit-svg .figure-inner { transform-origin: 196px 198px; }
+  .merit-svg .mallet       { transform-origin: 452px 72px; }
+  .merit-svg .muyu-body    { transform-origin: 400px 198px; }
+
+  @keyframes knock {
+    0%   { transform: rotate(-24deg); }
+    55%  { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes muyuSquash {
+    0%   { transform: scale(1, 1); }
+    40%  { transform: scale(1.05, .9); }
+    100% { transform: scale(1, 1); }
+  }
+
+  @keyframes twitch {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(-4px, -5px) rotate(-1.4deg); }
+    60%  { transform: translate(3px, 0) rotate(.9deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+
+  /* 木鱼上方飘出的「1W3」 */
+  .m-pop {
+    font-size: 28px;
+    font-weight: 900;
+    fill: var(--accent);
+    text-anchor: middle;
+    pointer-events: none;
+    transform-box: fill-box;
+    transform-origin: center;
+    /* 描边压在填充下面，飘到木鱼/人身上也看得清 */
+    paint-order: stroke fill;
+    stroke: rgba(10,12,18,.7);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    animation: meritFloat 1.25s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+
+  @keyframes meritFloat {
+    0%   { opacity: 0; transform: translateY(6px) scale(.5); }
+    16%  { opacity: 1; transform: translateY(-8px) scale(1.12); }
+    70%  { opacity: 1; transform: translateY(-46px) scale(1); }
+    100% { opacity: 0; transform: translateY(-64px) scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .m-pop { animation-duration: .01ms !important; }
+  }
+
+  /* ---------- Boss 战：跟老刁对线 ---------- */
+  .boss {
+    margin-top: 14px;
+    background: rgba(255,107,107,.05);
+    border: 1px solid rgba(255,107,107,.28);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .boss-intro { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
+
+  .boss-start {
+    width: 100%;
+    background: linear-gradient(120deg, #ff7a59, #ff6b6b);
+    color: #2a0b06;
+    font-weight: 800;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    transition: transform .15s ease;
+  }
+
+  .boss-start:hover { transform: translateY(-1px); }
+
+  .boss-arena { display: none; }
+  .boss.fighting .boss-arena { display: block; animation: fadeIn .4s ease both; }
+
+  .boss-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  .boss-bar-label { width: 92px; flex-shrink: 0; color: var(--text-dim); white-space: nowrap; }
+  .boss-bar { flex: 1; height: 8px; border-radius: 999px; background: var(--bg-soft); overflow: hidden; }
+  .boss-bar i { display: block; height: 100%; border-radius: 999px; transition: width .35s ease; }
+  .boss-hp { width: 100%; background: linear-gradient(90deg, #ff6b6b, #ff9a6b); }
+  .boss-you { width: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+  .boss-hp-num, .boss-you-num { width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .boss-round { font-size: 12px; color: var(--text-dim); margin: 12px 0 8px; }
+  .boss-round b { color: var(--accent); }
+
+  .boss-pose {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--bad);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+
+  .boss-pose-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .boss-pose-tag { font-size: 11px; font-weight: 800; color: var(--bad); letter-spacing: .1em; }
+
+  /* 他摆的是哪一招，直接摆脸上 */
+  .boss-pose-name {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    color: #2a0b06;
+    background: linear-gradient(120deg, #ff7a59, #ff6b6b);
+    border-radius: 8px;
+    padding: 2px 12px;
+  }
+
+  .boss-pose.pop { animation: posePop .45s ease; }
+
+  @keyframes posePop {
+    0%   { transform: scale(.97); }
+    45%  { transform: scale(1.025); }
+    100% { transform: scale(1); }
+  }
+
+  .boss-pose-line { font-size: 14px; color: #f3c3b2; margin-top: 6px; }
+
+  .boss-timer { height: 4px; border-radius: 999px; background: var(--bg-soft); overflow: hidden; margin-bottom: 10px; }
+  .boss-timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+  .boss-moves { display: flex; flex-direction: column; gap: 8px; }
+
+  .boss-move {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+
+  .boss-move-label { flex: 1; }
+
+  /* 每句话术克哪一招，也标出来 */
+  .boss-move-beats {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--good);
+    border: 1px solid rgba(87,217,163,.45);
+    border-radius: 999px;
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+
+  .boss-move:hover:not(:disabled) { border-color: var(--bad); background: rgba(255,107,107,.08); transform: translateX(2px); }
+  .boss-move:disabled { opacity: .5; cursor: default; }
+  .boss-move.picked { opacity: 1; border-color: var(--accent); background: rgba(255,184,77,.12); }
+  .boss-move.right { opacity: 1; border-color: var(--good); background: rgba(87,217,163,.12); }
+  .boss-move.right .boss-move-beats { background: rgba(87,217,163,.18); }
+
+  .boss-log { margin-top: 12px; font-size: 13px; min-height: 1.4em; }
+  .boss-log.good { color: var(--good); }
+  .boss-log.bad { color: var(--bad); }
+
+  .boss-result { margin-top: 12px; font-size: 14px; line-height: 1.7; }
+  .boss-result.good { color: var(--good); }
+  .boss-result.bad { color: var(--bad); }
+  .boss-hint { font-size: 12px; color: var(--text-dim); }
+
+  /* ---------- 真结局 ---------- */
+  .true-end {
+    display: none;
+    max-width: 520px;
+    margin: 0 auto 20px;
+    background: rgba(255,184,77,.08);
+    border: 1px solid rgba(255,184,77,.45);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+  }
+
+  .true-end.show { display: block; animation: fadeIn .6s ease both; }
+  .true-end h4 { font-size: 14px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+  .true-end p { font-size: 13px; color: var(--text-dim); margin: 0 0 8px; }
+  .true-end p:last-child { margin-bottom: 0; }
+
+  /* ---------- 隐藏结局：极速追杀 ---------- */
+  .hunt-end {
+    display: none;
+    max-width: 520px;
+    margin: 0 auto 20px;
+    background: rgba(255,60,60,.08);
+    border: 1px solid rgba(255,107,107,.5);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+  }
+
+  .hunt-end.show { display: block; animation: fadeIn .6s ease both; }
+  .hunt-end h4 { font-size: 14px; font-weight: 800; color: var(--bad); margin-bottom: 8px; }
+  .hunt-end p { font-size: 13px; color: var(--text-dim); margin: 0 0 8px; }
+  .hunt-end p:last-of-type { margin-bottom: 0; }
+  .hunt-end b { color: var(--bad); }
+
+  .hunt-award {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 900;
+    color: #2a0b06;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    border-radius: 999px;
+    padding: 11px 18px;
+    box-shadow: 0 6px 18px rgba(255,122,89,.3);
+  }
+
   /* ---------- 证据柜 ---------- */
   .drawer-btn {
     position: fixed;
@@ -727,6 +1222,7 @@
     display: block;
   }
 
+
   #lightbox {
     position: fixed;
     inset: 0;
@@ -745,6 +1241,79 @@
     max-height: 88vh;
     border-radius: 10px;
     box-shadow: var(--shadow);
+  }
+
+  /* ---------- 道心 / 好感的画面反馈 ---------- */
+  #mood {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .mood-red {
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 150px rgba(255,60,60,.55);
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+
+  body.mood-cracked .mood-red { opacity: .5; }
+  body.mood-broken .mood-red { opacity: 1; }
+
+  .mood-gold {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(700px 420px at 50% -10%, rgba(255,200,90,.22), transparent 70%),
+      linear-gradient(0deg, rgba(255,190,80,.07), rgba(255,190,80,.07));
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+
+  body.mood-jiao .mood-gold { opacity: 1; }
+
+  /* 金色的「老刁:好大儿」水印，好感 80+ 才出现 */
+  .mood-marks { display: none; }
+  body.mood-jiao .mood-marks { display: block; }
+
+  .mood-marks span {
+    position: absolute;
+    bottom: -8%;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--accent);
+    white-space: nowrap;
+    opacity: 0;
+    animation: markFloat 9s linear infinite;
+  }
+
+  .mood-marks span:nth-child(1) { left: 6%;  animation-delay: 0s; }
+  .mood-marks span:nth-child(2) { left: 32%; animation-delay: 2.2s; }
+  .mood-marks span:nth-child(3) { left: 62%; animation-delay: 4.5s; }
+  .mood-marks span:nth-child(4) { left: 84%; animation-delay: 6.8s; }
+
+  @keyframes markFloat {
+    0%   { transform: translateY(0) rotate(-6deg); opacity: 0; }
+    18%  { opacity: .12; }
+    82%  { opacity: .12; }
+    100% { transform: translateY(-112vh) rotate(6deg); opacity: 0; }
+  }
+
+  /* 道心碎到底：每 6.5 秒抽一下，不做成持续抖动，免得没法读字 */
+  body.mood-broken header,
+  body.mood-broken main { animation: heartBreak 6.5s ease-in-out infinite; }
+
+  @keyframes heartBreak {
+    0%, 5%, 100% { transform: translate(0, 0); }
+    0.7% { transform: translate(-4px, 2px); }
+    1.4% { transform: translate(4px, -2px); }
+    2.1% { transform: translate(-3px, -2px); }
+    2.8% { transform: translate(3px, 2px); }
+    3.5% { transform: translate(-2px, 1px); }
+    4.2% { transform: translate(2px, -1px); }
   }
 
   /* ---------- Toast ---------- */
@@ -775,8 +1344,14 @@
     .timeline::before { left: 21px; }
     .dot { left: 12px; }
     .node-card { padding: 16px 16px; }
-    .header-title { font-size: 13px; }
-    .heart-pill { font-size: 11px; padding: 3px 9px; }
+    /* 两个数值带上汉字后变宽，窄屏改成两行：上排数值，下排进度条 */
+    .header-title { display: none; }
+    .header-inner { gap: 8px; padding: 10px 14px; flex-wrap: wrap; }
+    .heart-pill { font-size: 11px; padding: 3px 8px; }
+    #heartPill { order: 1; }
+    #jiaoPill { order: 2; }
+    #progressText { order: 3; margin-left: auto; }
+    .progress-wrap { order: 4; flex-basis: 100%; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -787,12 +1362,29 @@
 </head>
 <body>
 
+  <!-- 口令页：进入开场之前的第一道门 -->
+  <div id="gate">
+    <div class="gate-inner">
+      <span class="kicker">Access Required</span>
+      <div class="gate-card">
+        <p class="gate-prompt">请输入神秘小口令：逸一时误一时，<span class="blank">_______</span></p>
+        <div class="gate-field" id="gateField">
+          <span class="gate-caret">›</span>
+          <input id="gateInput" type="text" autocomplete="off" spellcheck="false" placeholder="在这里输入口令…">
+          <button id="gateBtn">验证</button>
+        </div>
+        <p class="gate-msg" id="gateMsg" aria-live="polite"></p>
+      </div>
+      <p class="gate-note">口令答对才放你进去 · 提示：后半句念出来，是串数字的谐音</p>
+    </div>
+  </div>
+
   <!-- 开场 -->
-  <div id="splash">
+  <div id="splash" class="hidden">
     <div class="splash-inner">
       <span class="kicker">2026 TI 杯 · H 题</span>
       <h1>1w3 的故事</h1>
-      <p class="sub">从曹梦腾无人管的大一，讲到自费一万三、熬夜三四天的 TI 杯。<br>按顺序点开节点，中间有对话选项、小游戏和隐藏评价。<br>全程盯好「道心值」，也注意别把「老刁好感度」刷满。</p>
+      <p class="sub">从曹梦腾没人管的大一，讲到自费一万三、熬夜三四天的 TI 杯。<br>按顺序点开节点，中间有对话选项、小游戏和隐藏评价。<br>全程盯好「道心值」，也注意别把「老刁好感度」刷满。</p>
       <button id="startBtn">开始复盘 ▶</button>
       <p class="splash-note">🖱️ 也可以点屏幕上任意地方继续</p>
     </div>
@@ -804,20 +1396,20 @@
       <div class="header-title">TI 杯 <span>·</span> 1w3</div>
       <div class="progress-wrap"><div id="progressBar"></div></div>
       <div id="progressText">0 / 14</div>
-      <div class="heart-pill" id="heartPill">❤️ <span id="heartVal">100</span></div>
-      <div class="heart-pill" id="jiaoPill">🎭 <span id="jiaoVal">100</span></div>
+      <div class="heart-pill" id="heartPill">❤️ 道心 <span id="heartVal">100</span></div>
+      <div class="heart-pill" id="jiaoPill">🎭 老刁好感 <span id="jiaoVal">100</span></div>
     </div>
   </header>
 
   <main>
     <section class="intro">
       <h2>先认识一下当事人</h2>
-      <p>这张图讲的是 ys（元帅）和 cmt（曹梦腾）参赛前后的事。涉及人物先放这儿，后面会不断出现。名字来自语音转写，可能有出入。</p>
+      <p>这页讲的是 ys（袁帅）和 cmt（曹梦腾）参赛前后的事。涉及人物先放这儿，后面会不断出现。名字来自语音转写，可能有出入。</p>
 
       <div class="cast">
         <div class="cast-card">
           <span class="emoji">🔥</span>
-          <div class="name">ys · 元帅</div>
+          <div class="name">ys · 袁帅</div>
           <div class="role">主视角 · 不是电院的，敢跟老刁闹僵 · 明年当队长</div>
         </div>
         <div class="cast-card">
@@ -828,12 +1420,12 @@
         <div class="cast-card">
           <span class="emoji">🛡️</span>
           <div class="name">老刁</div>
-          <div class="role">带队老师 · "大一先别打" · 一个电话取消 A · 报销 500→600 · 护犊子</div>
+          <div class="role">带队老师 · "大一先别打" · 一个电话取消 AA · 报销 500→600 · 护犊子</div>
         </div>
         <div class="cast-card">
           <span class="emoji">🛋️</span>
           <div class="name">第三人 · 23 电子</div>
-          <div class="role">老刁指派 · 天天挂科 · 开赛没来</div>
+          <div class="role">老刁指派 · 大三 · 天天挂科 · 开赛没来</div>
         </div>
         <div class="cast-card">
           <span class="emoji">🤝</span>
@@ -842,13 +1434,13 @@
         </div>
         <div class="cast-card">
           <span class="emoji">🧭</span>
-          <div class="name">兰晶胜 · 兰部长</div>
+          <div class="name">兰晶圣 · 兰部长</div>
           <div class="role">负责分队 · 女生退队时没人通知他</div>
         </div>
         <div class="cast-card">
           <span class="emoji">🧮</span>
           <div class="name">刘宇辰</div>
-          <div class="role">PIT 23 级学长 · 帮谈 A · 明年帮忙挂名</div>
+          <div class="role">PIT 23 级学长 · 帮谈 AA · 明年帮忙挂名</div>
         </div>
         <div class="cast-card">
           <span class="emoji">🎬</span>
@@ -870,18 +1462,90 @@
       <div class="stats">
         <span>道心 <b id="finalHeart">100</b></span>
         <span>老刁好感 <b id="finalJiao">100</b></span>
-        <span>证据 <b id="finalCards">0</b> / 15</span>
+        <span>证据 <b id="finalCards">0</b> / <b id="finalCardsMax">15</b></span>
         <span>称号 <b id="finalTitle">-</b></span>
       </div>
       <div class="eval-box">
         <h4>🎭 当事人评价</h4>
         <p id="evalLine"></p>
       </div>
+      <div class="true-end" id="trueEnd">
+        <h4>🔥 真结局 · 你没怂</h4>
+        <p>当面把话说清楚，老刁一句都没接住——护犊子护不动，太极打不下去，感情牌也没人接。奖状不发、奖金不分，AA 的钱他再没提过。</p>
+        <p>现实里那一万三还是自己掏的；但至少在游戏里，他没占到便宜。</p>
+      </div>
+
+      <div class="hunt-end" id="huntEnd">
+        <h4>🚨 隐藏结局 · 极速追杀</h4>
+        <p>就在你敲完第 130 下木鱼的那一晚，老刁不知道从哪儿翻到了这个页面。</p>
+        <p>第二天一早，教研室门口贴出一张《<b>电气自动化追杀榜</b>》：榜首是网站作者，后面依次是全部参与人员，理由一栏只写了四个字——<b>不懂感恩</b>。</p>
+        <p>你的名字排在第几行，自己数吧。</p>
+        <p>至于那个奖，他也连夜给你补了一个：</p>
+        <div class="hunt-award">🏅 《城院五星⭐好学生》</div>
+      </div>
       <div class="finale-actions">
         <button class="btn btn-primary" id="copyBtn">📋 复制全文</button>
         <button class="btn btn-ghost" id="drawerBtn2">📦 打开证据柜</button>
         <button class="btn btn-ghost" id="restartBtn">↺ 再走一遍</button>
       </div>
+    </section>
+
+    <!-- 结局后的搞怪彩蛋：躺地上脸上写着「刁」的人 + 功德木鱼 -->
+    <section class="merit" id="merit">
+      <h3>🔨 功德木鱼 <span class="merit-count" id="meritCount">功德 0 / 130</span></h3>
+      <p class="merit-sub">点一下木鱼，响一声，飘一行数字 —— 敲得越多他越松口，敲满 <b>130</b> 下，他就坐起来了。</p>
+      <svg class="merit-svg" viewBox="0 0 460 216" role="img"
+           aria-label="一个躺在地上、脸上写着「刁」字的人，旁边摆着一个木鱼">
+        <line class="m-ground" x1="16" y1="198" x2="444" y2="198"/>
+
+        <!-- 躺地的当事人：腿不动，上半身留着"坐起来"用 -->
+        <g class="figure" id="figure">
+          <g class="figure-inner" id="figureInner">
+            <ellipse class="m-shadow" cx="196" cy="202" rx="162" ry="10"/>
+            <g class="m-legs">
+              <rect class="m-limb" x="38" y="158" width="104" height="22" rx="11"/>
+              <rect class="m-limb" x="46" y="180" width="96" height="16" rx="8"/>
+              <ellipse class="m-limb" cx="40" cy="169" rx="10" ry="12"/>
+            </g>
+            <g class="m-upper" id="meritUpper">
+              <rect class="m-body" x="118" y="146" width="154" height="50" rx="25"/>
+              <ellipse class="m-limb" cx="252" cy="190" rx="36" ry="11"/>
+              <circle class="m-head" cx="306" cy="150" r="42"/>
+              <path class="m-eye" d="M283 128 l13 13 M296 128 l-13 13"/>
+              <path class="m-eye" d="M316 128 l13 13 M329 128 l-13 13"/>
+              <text class="m-diao" x="306" y="170">刁</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- 木鱼 + 木槌 -->
+        <g class="muyu" id="muyu">
+          <rect class="muyu-hit" x="342" y="104" width="114" height="100" fill="none" pointer-events="all"/>
+          <g class="muyu-body">
+            <ellipse class="muyu-base" cx="400" cy="170" rx="36" ry="28"/>
+            <circle class="muyu-curl" cx="376" cy="152" r="8"/>
+            <circle class="muyu-curl" cx="424" cy="152" r="8"/>
+            <path class="muyu-slit" d="M366 172 Q400 192 434 172"/>
+            <ellipse class="muyu-gloss" cx="386" cy="160" rx="11" ry="6"/>
+          </g>
+          <g class="mallet">
+            <line class="mallet-stick" x1="452" y1="72" x2="416" y2="120"/>
+            <circle class="mallet-head" cx="410" cy="127" r="11"/>
+          </g>
+        </g>
+
+        <!-- 吐槽气泡 -->
+        <g class="m-say" id="meritSay">
+          <rect class="m-say-bg" x="16" y="14" width="230" height="52" rx="16"/>
+          <circle class="m-say-bg m-say-dot" cx="252" cy="74" r="6"/>
+          <circle class="m-say-bg m-say-dot" cx="265" cy="88" r="4"/>
+          <circle class="m-say-bg m-say-dot" cx="276" cy="101" r="2.5"/>
+          <text class="m-say-text" x="131" y="41"></text>
+        </g>
+
+        <!-- 飘字挂在这里 -->
+        <g id="meritPops"></g>
+      </svg>
     </section>
 
     <p class="footer-note">本页面为个人记录，按当事人叙述整理 · 选择题与小游戏仅为玩梗，真实经过以节点文字为准 · 2026</p>
@@ -899,7 +1563,14 @@
     </div>
   </div>
 
-  <div id="lightbox"><img id="lightboxImg" alt="证据截图"></div>
+  <div id="lightbox"></div>
+
+  <!-- 道心 / 老刁好感的画面反馈层 -->
+  <div id="mood" aria-hidden="true">
+    <div class="mood-red"></div>
+    <div class="mood-gold"></div>
+    <div class="mood-marks"><span>老刁:好大儿</span><span>老刁:好大儿</span><span>老刁:好大儿</span><span>老刁:好大儿</span></div>
+  </div>
 
   <div id="toast"></div>
 
@@ -928,16 +1599,16 @@
     {
       type: "dialogue",
       emoji: "🧩",
-      title: "组队：从 TIA 到元帅队",
-      text: "cmt 本来想打 TIA，去问老刁，结果被安排得明明白白。后来元帅（ys）这边要人，兰部长（兰晶胜）给 cmt 分了队，最后分到了元帅队。",
+      title: "组队：从 TI 杯到袁帅队",
+      text: "cmt 本来想打 TI 杯，去问老刁，结果被安排得明明白白。后来袁帅（ys）这边要人，兰部长（兰晶圣）给 cmt 分了队，最后分到了袁帅队。",
       scene: { spEmoji: "🎭", speaker: "老刁", line: "你大一先别打，先等着。" },
       question: "你要怎么接？",
       options: [
         { label: "好，那我等", reply: "嗯，听话。", effect: -5, jiaoEffect: 5 },
-        { label: "我想打 A 题，帮我想想办法", reply: "我说了别打就别打。", effect: -8, jiaoEffect: -5 },
-        { label: "那……元帅队缺人，我能去吗？", reply: "行，让兰部长给你分过去。", effect: 2, jiaoEffect: -2 }
+        { label: "我想打 H 题，帮我想想办法", reply: "我说了别打就别打。", effect: -8, jiaoEffect: -5 },
+        { label: "那……袁帅队缺人，我能去吗？", reply: "行，让兰部长给你分过去。", effect: 2, jiaoEffect: -2 }
       ],
-      card: { emoji: "🧩", name: "分队记录", desc: "兰部长（兰晶胜）：分到元帅队" },
+      card: { emoji: "🧩", name: "分队记录", desc: "兰部长（兰晶圣）：分到袁帅队" },
       effect: 0
     },
     {
@@ -968,7 +1639,7 @@
       type: "chapter",
       emoji: "🔄",
       title: "转专业与道心",
-      text: "cmt 因为认识老刁、也知道赵通很屌（大学期间打过 M），就从通信转到了自动化。可他之前在通信的朋友，跑去搞 IT / 人工智能，什么都不会也能躺个国奖。这让 cmt 有点道心崩，跑来问 ys：「这个比赛，含金量到底怎么样？」",
+      text: "cmt 因为认识老刁、也知道赵通很屌（大学期间打过 RM），就从通信转到了自动化。可他之前在通信的朋友，跑去搞 IT / 人工智能，什么都不会也能躺个国奖。这让 cmt 有点道心崩，跑来问 ys：「这个比赛，含金量到底怎么样？」",
       quote: "朋友们躺着拿国奖，我在这肝单片机？道心有点崩。",
       card: { emoji: "🔄", name: "转专业申请表", desc: "通信 → 自动化" },
       effect: -8
@@ -997,7 +1668,15 @@
         { label: "先应着，回去再摇人", reply: "行，就这么定。", effect: -3, jiaoEffect: 3 },
         { label: "当场摊牌：这奖我们不要了", reply: "……你再说一遍？", effect: -12, jiaoEffect: -25 }
       ],
-      card: { emoji: "📸", name: "微信截图", desc: "当事人提供 · 老刁相关", img: "evidence/diao_chat.jpg" },
+      effect: 0
+    },
+    {
+      type: "boss",
+      emoji: "🎤",
+      title: "对线：当面把话说清楚",
+      text: "微信上聊不出结果，两个人干脆当面摊牌。老刁的套路也就那三招——护犊子、打太极、打感情牌。看清他摆的是哪一招，用对的话术怼回去，把他的脸皮条清零，这一局就算你赢。",
+      bossIntro: "5 个回合，每回合 15 秒。答错或超时都扣自己的气势。",
+      card: { emoji: "🎤", name: "对线记录", desc: "当面把话说清楚，谁也没让谁" },
       effect: 0
     },
     {
@@ -1012,10 +1691,10 @@
     {
       type: "chapter",
       emoji: "🕊️",
-      title: "转机：学长帮忙谈 A",
-      text: "比赛打完那一晚，刘宇辰学长帮忙商量：第三人原本同意 A 掉 13000 成本的一半（也就是出 6500 分摊费用）。结果第二天，老刁一个电话打过来，那一半 A 就没了。",
-      quote: "原来说好的 A 一半，第二天老刁一个电话，没了。",
-      card: { emoji: "☎️", name: "通话记录", desc: "老刁来电：A 一半作废" },
+      title: "转机：学长帮忙谈 AA",
+      text: "比赛打完那一晚，刘宇辰学长帮忙商量：第三人原本同意 AA 掉 13000 成本的一半（也就是出 6500 分摊费用）。结果第二天，老刁一个电话打过来，那一半 AA 就没了。",
+      quote: "原来说好的 AA 一半，第二天老刁一个电话，没了。",
+      card: { emoji: "☎️", name: "通话记录", desc: "老刁来电：AA 一半作废" },
       effect: 6
     },
     {
@@ -1075,13 +1754,24 @@
   const jiaoPill = document.getElementById("jiaoPill");
   const jiaoVal = document.getElementById("jiaoVal");
   const toast = document.getElementById("toast");
+  const gate = document.getElementById("gate");
+  const gateField = document.getElementById("gateField");
+  const gateInput = document.getElementById("gateInput");
+  const gateBtn = document.getElementById("gateBtn");
+  const gateMsg = document.getElementById("gateMsg");
   const splash = document.getElementById("splash");
   const drawer = document.getElementById("drawer");
   const drawerBtn = document.getElementById("drawerBtn");
   const drawerCount = document.getElementById("drawerCount");
   const cardGrid = document.getElementById("cardGrid");
   const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightboxImg");
+  const merit = document.getElementById("merit");
+  const muyu = document.getElementById("muyu");
+  const figureInner = document.getElementById("figureInner");
+  const meritSay = document.getElementById("meritSay");
+  const meritCountEl = document.getElementById("meritCount");
+  const meritPops = document.getElementById("meritPops");
+  const SVG_NS = "http://www.w3.org/2000/svg";
 
   let current = -1;
   let heart = 100;
@@ -1100,20 +1790,36 @@
     showToast._t = setTimeout(() => toast.classList.remove("show"), 2200);
   }
 
+  // 两个数值不只是数字：道心低了画面发暗发抖，老刁好感高了镀金。
+  // current < 0 表示剧情还没开始（开场页 / 刚点重开），这时不铺滤镜
+  function syncMood() {
+    const on = current >= 0;
+    document.body.classList.toggle("mood-cracked", on && heart < 40 && heart >= 25);
+    document.body.classList.toggle("mood-broken", on && heart < 25);
+    document.body.classList.toggle("mood-jiao", on && jiao >= 80);
+  }
+
   function applyHeart(n) {
+    const prev = heart;
     heart = clamp(heart + n, 0, 100);
     heartVal.textContent = heart;
     heartPill.classList.toggle("heart-high", heart >= 70);
     heartPill.classList.toggle("heart-mid", heart >= 40 && heart < 70);
     heartPill.classList.toggle("heart-low", heart < 40);
+    syncMood();
+    if (prev >= 40 && heart < 40) showToast("💔 道心裂了，画面开始发暗");
+    if (prev >= 25 && heart < 25) showToast("🫠 道心碎到底，屏幕开始抽");
   }
 
   function applyJiao(n) {
+    const prev = jiao;
     jiao = clamp(jiao + n, 0, 100);
     jiaoVal.textContent = jiao;
     jiaoPill.classList.toggle("heart-high", jiao >= 70);
     jiaoPill.classList.toggle("heart-mid", jiao >= 40 && jiao < 70);
     jiaoPill.classList.toggle("heart-low", jiao < 40);
+    syncMood();
+    if (prev < 80 && jiao >= 80) showToast("👑 老刁好感 80+：他已经把你当大儿子了");
   }
 
   function buildInteractive(item, i) {
@@ -1148,11 +1854,44 @@
       </div>`;
   }
 
+  function buildBoss(i) {
+    return `
+      <div class="boss" data-idx="${i}">
+        <p class="boss-intro">${STORY[i].bossIntro}</p>
+        <button class="boss-start">🎤 开麦对线</button>
+        <div class="boss-arena">
+          <div class="boss-bar-row">
+            <span class="boss-bar-label">🎭 老刁 · 脸皮</span>
+            <div class="boss-bar"><i class="boss-hp"></i></div>
+            <b class="boss-hp-num">100</b>
+          </div>
+          <div class="boss-bar-row">
+            <span class="boss-bar-label">🔥 你 · 气势</span>
+            <div class="boss-bar"><i class="boss-you"></i></div>
+            <b class="boss-you-num">100</b>
+          </div>
+          <div class="boss-round">第 <b>1</b> / ${BOSS_ROUNDS} 回合 · 挑「克」他架势的那一句</div>
+          <div class="boss-pose">
+            <div class="boss-pose-head">
+              <span class="boss-pose-tag">老刁的架势</span>
+              <span class="boss-pose-name"></span>
+            </div>
+            <p class="boss-pose-line"></p>
+          </div>
+          <div class="boss-timer"><i></i></div>
+          <div class="boss-moves"></div>
+          <p class="boss-log"></p>
+        </div>
+        <div class="boss-result"></div>
+      </div>`;
+  }
+
   function renderTimeline() {
     STORY.forEach((item, i) => {
       const node = document.createElement("article");
       node.className = "node locked";
-      const isBlocked = item.type === "quiz" || item.type === "dialogue" || item.type === "game";
+      const isBlocked = item.type === "quiz" || item.type === "dialogue"
+        || item.type === "game" || item.type === "boss";
       node.innerHTML = `
         ${item.divider ? `<div class="divider"><span>${item.divider}</span></div>` : ""}
         <div class="dot"></div>
@@ -1166,6 +1905,7 @@
             ${item.quote ? `<blockquote>${item.quote}</blockquote>` : ""}
             ${item.type === "quiz" || item.type === "dialogue" ? buildInteractive(item, i) : ""}
             ${item.type === "game" ? buildGame(i) : ""}
+            ${item.type === "boss" ? buildBoss(i) : ""}
             <div class="node-foot">
               <span class="hint">${i === STORY.length - 1 ? "最后一节 🏁" : "看完这一节，解锁下一节"}</span>
               ${i === STORY.length - 1 ? "" :
@@ -1220,15 +1960,24 @@
     collectCards(current);
     if (shouldScroll !== false) {
       requestAnimationFrame(() => {
-        nodes[current].scrollIntoView({ behavior: "smooth", block: "center" });
+        // 这一帧里如果刚好点了「再走一遍」，nodes 已被重建、current 也回到 -1，得挡一下
+        const node = nodes[current];
+        if (node) node.scrollIntoView({ behavior: "smooth", block: "center" });
       });
     }
-    if (current === STORY.length - 1) {
-      finale.classList.add("show");
-      showFinale();
-      if (shouldScroll !== false) {
-        setTimeout(() => finale.scrollIntoView({ behavior: "smooth", block: "center" }), 550);
-      }
+    maybeShowFinale(shouldScroll);
+  }
+
+  // 最后一节是选择题/对话时，必须答完才结算；否则第 13 节点「下一节」会直接被结局抢走视线，
+  // 第 14 节看起来就像被跳过了
+  function maybeShowFinale(shouldScroll) {
+    const last = STORY.length - 1;
+    if (current < last) return;
+    const blocked = STORY[last].type === "quiz" || STORY[last].type === "dialogue";
+    if (blocked && answered[last] === undefined) return;
+    revealFinale();
+    if (shouldScroll !== false) {
+      setTimeout(() => finale.scrollIntoView({ behavior: "smooth", block: "center" }), 550);
     }
   }
 
@@ -1257,14 +2006,25 @@
     return { emoji: "🫠", name: "道心粉碎 · 已麻" };
   }
 
+  // 隐藏结局「极速追杀」：证据全收齐 + 木鱼敲满 130。
+  // 意思是——他把整个站从头翻到尾，也知道了这站是谁做的
+  function huntUnlocked() {
+    return collected.size >= TOTAL_CARDS && meritHits >= MERIT_SIT;
+  }
+
   function showFinale() {
     const t = computeTitle();
-    document.getElementById("titleBanner").textContent = `${t.emoji} ${t.name}`;
+    const hunt = huntUnlocked();
+    document.getElementById("titleBanner").textContent =
+      `${hunt ? "🚨 " : boss.won ? "🔥 " : ""}${t.emoji} ${t.name}`;
     document.getElementById("finalHeart").textContent = heart;
     document.getElementById("finalJiao").textContent = jiao;
     document.getElementById("finalCards").textContent = collected.size;
+    document.getElementById("finalCardsMax").textContent = TOTAL_CARDS;
     document.getElementById("finalTitle").textContent = t.name;
     document.getElementById("evalLine").textContent = computeEval();
+    document.getElementById("trueEnd").classList.toggle("show", boss.won);
+    document.getElementById("huntEnd").classList.toggle("show", hunt);
   }
 
   function computeEval() {
@@ -1301,6 +2061,7 @@
     applyHeart(opt.effect);
     applyJiao(opt.jiaoEffect || 0);
     showNext(node);
+    maybeShowFinale(true); // 答完最后一节的题，这时才结算
   }
 
   function startGame(idx) {
@@ -1346,6 +2107,187 @@
     showNext(nodes[idx]);
   }
 
+  // ---------- Boss 战：跟老刁对线 ----------
+  // 老刁每回合摆一个架势，玩家要从三个话术里挑克星。核心是"看清架势再出手"，
+  // 而不是无脑点第一个——所以架势提示写在明处，克制关系靠常识推。
+  const BOSS_ROUNDS = 5;
+  const BOSS_HP = 100;
+  const BOSS_YOU = 100;
+  const BOSS_DMG = 25;      // 答对扣老刁多少脸皮（4 次答对正好清零）
+  const BOSS_MISS = 22;     // 答错/超时扣自己多少气势
+  const BOSS_MS = 15000;    // 每回合限时
+
+  const BOSS_STANCES = [
+    { key: "hu",      name: "护犊子",   line: "他大三了，什么都不会，你们带带他怎么了？" },
+    { key: "taiji",   name: "打太极",   line: "这个事嘛……以后再说，先这样吧。" },
+    { key: "ganqing", name: "打感情牌", line: "我带你们这么久，你们就这么对我？" }
+  ];
+
+  function stanceName(key) {
+    const s = BOSS_STANCES.find((x) => x.key === key);
+    return s ? s.name : "";
+  }
+
+  const BOSS_MOVES = [
+    {
+      key: "shishi",
+      label: "摆事实：他一场没来，奖状凭什么算他的",
+      beats: "hu",
+      hit: "🔨 正中要害！他护犊子护不下去了。",
+      miss: "😐 没打到点上，他脸皮又厚了一层。"
+    },
+    {
+      key: "yinggang",
+      label: "硬刚：今天就把话说清楚，AA 一半是早说好的",
+      beats: "taiji",
+      hit: "🔨 正中要害！太极打不下去了。",
+      miss: "😐 他端着茶杯一句「以后再说」，把你堵了回来。"
+    },
+    {
+      key: "chenmo",
+      label: "不接话：您继续说，我们只谈事",
+      beats: "ganqing",
+      hit: "🔨 正中要害！感情牌打在棉花上。",
+      miss: "😐 你没接住他的软话，气场上先输了一截。"
+    }
+  ];
+
+  let boss = {
+    active: false, over: false, won: false,
+    nodeIdx: -1, round: 0, hp: BOSS_HP, you: BOSS_YOU, stance: null, timer: null, busy: false
+  };
+
+  function bossEl(idx) { return nodes[idx].querySelector(".boss"); }
+
+  function bossBars(idx) {
+    const el = bossEl(idx);
+    el.querySelector(".boss-hp").style.width = clamp(boss.hp, 0, BOSS_HP) + "%";
+    el.querySelector(".boss-you").style.width = clamp(boss.you, 0, BOSS_YOU) + "%";
+    el.querySelector(".boss-hp-num").textContent = clamp(boss.hp, 0, BOSS_HP);
+    el.querySelector(".boss-you-num").textContent = clamp(boss.you, 0, BOSS_YOU);
+  }
+
+  function bossStart(idx) {
+    const el = bossEl(idx);
+    el.classList.add("fighting");
+    el.querySelector(".boss-start").style.display = "none";
+    boss = {
+      active: true, over: false, won: false,
+      nodeIdx: idx, round: 0, hp: BOSS_HP, you: BOSS_YOU, stance: null, timer: null, busy: false
+    };
+    el.querySelector(".boss-moves").innerHTML = BOSS_MOVES.map((m) => `
+      <button class="boss-move" data-move="${m.key}">
+        <span class="boss-move-label">${m.label}</span>
+        <span class="boss-move-beats">克「${stanceName(m.beats)}」</span>
+      </button>`).join("");
+    el.querySelector(".boss-log").textContent = "";
+    el.querySelector(".boss-result").textContent = "";
+    el.querySelector(".boss-result").className = "boss-result";
+    bossBars(idx);
+    bossNextRound(idx);
+  }
+
+  function bossNextRound(idx) {
+    if (boss.over) return;
+    if (boss.hp <= 0 || boss.you <= 0 || boss.round >= BOSS_ROUNDS) { bossFinish(idx); return; }
+
+    boss.round++;
+    boss.busy = false;
+    let stance;
+    do { stance = BOSS_STANCES[Math.floor(Math.random() * BOSS_STANCES.length)]; }
+    while (stance === boss.stance); // 不连着摆同一个架势
+    boss.stance = stance;
+
+    const el = bossEl(idx);
+    el.querySelector(".boss-round b").textContent = boss.round;
+    el.querySelector(".boss-pose-name").textContent = stance.name;
+    el.querySelector(".boss-pose-line").textContent = `「${stance.line}」`;
+    el.querySelectorAll(".boss-move").forEach((b) => {
+      b.disabled = false;
+      b.classList.remove("picked", "right");
+    });
+    replayAnim(el.querySelector(".boss-pose"), "pop");
+
+    const bar = el.querySelector(".boss-timer i");
+    bar.style.transition = "none";
+    bar.style.width = "100%";
+    void bar.getBoundingClientRect().width;
+    bar.style.transition = `width ${BOSS_MS}ms linear`;
+    bar.style.width = "0%";
+
+    clearTimeout(boss.timer);
+    boss.timer = setTimeout(() => bossAnswer(idx, null), BOSS_MS);
+  }
+
+  function bossAnswer(idx, moveKey) {
+    if (!boss.active || boss.busy) return;
+    boss.busy = true;
+    clearTimeout(boss.timer);
+
+    const el = bossEl(idx);
+    const bar = el.querySelector(".boss-timer i");
+    bar.style.transition = "none";
+    bar.style.width = "0%";
+
+    const log = el.querySelector(".boss-log");
+    const move = BOSS_MOVES.find((m) => m.key === moveKey);
+
+    if (!move) {
+      boss.you -= BOSS_MISS;
+      log.textContent = "⏰ 你愣了一下，被老刁抢了话头。";
+      log.className = "boss-log bad";
+    } else if (move.beats === boss.stance.key) {
+      boss.hp -= BOSS_DMG;
+      log.textContent = move.hit;
+      log.className = "boss-log good";
+    } else {
+      boss.hp -= 6;
+      boss.you -= BOSS_MISS;
+      log.textContent = move.miss;
+      log.className = "boss-log bad";
+    }
+
+    // 出招后把正确答案也标出来，让人下一回合就知道该怎么看
+    const counter = BOSS_MOVES.find((m) => m.beats === boss.stance.key);
+    el.querySelectorAll(".boss-move").forEach((b) => {
+      b.disabled = true;
+      b.classList.remove("right");
+      if (b.dataset.move === moveKey) b.classList.add("picked");
+      if (counter && b.dataset.move === counter.key) b.classList.add("right");
+    });
+    bossBars(idx);
+    setTimeout(() => { if (!boss.over) bossNextRound(idx); }, 1100);
+  }
+
+  function bossFinish(idx) {
+    boss.active = false;
+    boss.over = true;
+    clearTimeout(boss.timer);
+
+    const el = bossEl(idx);
+    el.classList.remove("fighting");
+    const win = boss.hp <= 0 && boss.you > 0;
+    boss.won = win;
+
+    const res = el.querySelector(".boss-result");
+    if (win) {
+      applyHeart(12);
+      applyJiao(-20);
+      res.className = "boss-result good";
+      res.innerHTML = `🏆 <b>你赢了。</b>老刁的脸皮被你说没了，最后一句是「行行行，你们说了算」。<br>
+        <span class="boss-hint">🔥 真结局已解锁 —— 走到最后看看。</span>`;
+    } else {
+      applyHeart(-6);
+      res.className = "boss-result bad";
+      res.innerHTML = boss.you <= 0
+        ? `😶 <b>你说不下去了。</b>老刁一句「你们还年轻」，把你堵了回来。`
+        : `😑 <b>没说过他。</b>脸皮还剩 ${clamp(boss.hp, 0, BOSS_HP)}，老刁端起茶杯：「就按我说的办。」`;
+    }
+    showNext(nodes[idx]);
+    // 深链可能已经先看过结局了，打完这一局要回头刷新一下结算
+    if (finale.classList.contains("show")) showFinale();
+  }
+
   // 点击节点 / 选项 / 游戏
   timeline.addEventListener("click", (e) => {
     const nextBtn = e.target.closest(".next-btn");
@@ -1359,6 +2301,12 @@
 
     const gf = e.target.closest(".game-fire");
     if (gf) { fireGame(); return; }
+
+    const bs = e.target.closest(".boss-start");
+    if (bs) { bossStart(nodes.indexOf(bs.closest(".node"))); return; }
+
+    const bm = e.target.closest(".boss-move");
+    if (bm) { if (boss.active) bossAnswer(boss.nodeIdx, bm.dataset.move); return; }
 
     const card = e.target.closest(".node-card");
     if (!card) return;
@@ -1376,6 +2324,8 @@
 
   // 键盘支持
   document.addEventListener("keydown", (e) => {
+    // 口令没过之前，键盘只服务口令输入框，不许偷跑剧情
+    if (!gate.classList.contains("hidden")) return;
     if (e.key !== "Enter" && e.key !== " ") return;
     if (!splash.classList.contains("hidden")) { start(); return; }
     if (game.active) { fireGame(); return; }
@@ -1392,6 +2342,53 @@
     if (!e.target.closest("#startBtn")) start();
   });
 
+  // ---------- 口令页 ----------
+  // 口令做字符拆解：只存 UTF-16 码位与掩码异或后的值，运行时逐字还原，
+  // 源码里既搜不到原句，也看不出原字的码位（F12 直接翻是看不到答案的）
+  const GATE_MASK = 0x2a;
+  const GATE_CODE = [0x9012, 0x4e6f, 0x9012, 0x4e6f, 0x7f48, 0x5dd8, 0x9fae];
+  const GATE_ANSWER = GATE_CODE.map((c) => String.fromCharCode(c ^ GATE_MASK)).join("");
+
+  // 宽容匹配：忽略空格和各类标点，允许把整句抄进来
+  function normalizeGate(s) {
+    return (s || "").replace(/[\s，。、,.!！?？;；:：""''「」『』（）()\[\]【】_—\-]/g, "");
+  }
+
+  function checkGate() {
+    const val = normalizeGate(gateInput.value);
+    if (!val) {
+      shakeGate("先输入点什么吧……");
+      return;
+    }
+    if (val.includes(GATE_ANSWER)) {
+      gateMsg.textContent = "✅ 口令正确，门开了";
+      gateMsg.classList.add("ok");
+      gateInput.blur();
+      setTimeout(() => {
+        gate.classList.add("hidden");
+        showToast("🔓 口令正确，欢迎回来");
+        enterStory();
+      }, 380);
+    } else {
+      shakeGate("❌ 口令错误，再想想");
+    }
+  }
+
+  function shakeGate(msg) {
+    gateMsg.textContent = msg;
+    gateMsg.classList.remove("ok");
+    gateField.classList.remove("shake");
+    void gateField.offsetWidth; // 重置动画，保证连续输错也能抖动
+    gateField.classList.add("shake");
+    gateInput.select();
+  }
+
+  gateBtn.addEventListener("click", checkGate);
+  gateInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); checkGate(); }
+  });
+  gateField.addEventListener("animationend", () => gateField.classList.remove("shake"));
+
   // 证据柜
   function toggleDrawer(show) {
     drawer.classList.toggle("show", show);
@@ -1406,7 +2403,7 @@
   cardGrid.addEventListener("click", (e) => {
     const thumb = e.target.closest(".thumb");
     if (!thumb) return;
-    lightboxImg.src = thumb.dataset.src;
+    lightbox.innerHTML = `<img src="${thumb.dataset.src}" alt="证据截图">`;
     lightbox.classList.add("show");
   });
   lightbox.addEventListener("click", () => lightbox.classList.remove("show"));
@@ -1414,6 +2411,13 @@
   document.getElementById("restartBtn").addEventListener("click", () => {
     if (game.timer) clearInterval(game.timer);
     game = { active: false, nodeIdx: -1, clicks: 0, timer: null };
+    clearTimeout(boss.timer);
+    boss = {
+      active: false, over: false, won: false,
+      nodeIdx: -1, round: 0, hp: BOSS_HP, you: BOSS_YOU, stance: null, timer: null, busy: false
+    };
+    document.getElementById("trueEnd").classList.remove("show");
+    document.getElementById("huntEnd").classList.remove("show");
     heart = 100;
     jiao = 100;
     collected = new Set();
@@ -1423,10 +2427,16 @@
     nodes = [];
     renderTimeline();
     finale.classList.remove("show");
+    merit.classList.remove("show", "sitting");
+    meritPops.innerHTML = "";
+    meritSay.classList.remove("show");
+    meritHits = 0;
+    meritCountEl.textContent = `功德 0 / ${MERIT_SIT}`;
     heartVal.textContent = heart;
     heartPill.className = "heart-pill";
     jiaoVal.textContent = jiao;
     jiaoPill.className = "heart-pill";
+    syncMood();
     update();
     updateDrawer();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1442,8 +2452,12 @@
         `${i + 1}. ${s.title}\n   ${s.text}${s.scene ? `\n   ${s.scene.speaker}：「${s.scene.line}」` : ""}`
       ),
       "",
-      `结算：道心 ${heart} · 老刁好感 ${jiao} · 称号「${t.name}」`,
+      `结算：道心 ${heart} · 老刁好感 ${jiao} · 称号「${boss.won ? "🔥 " : ""}${t.name}」`,
       `评价：${computeEval()}`,
+      ...(boss.won ? ["对线：当面把话说清楚，老刁一句没接住（真结局已解锁）。"] : []),
+      ...(huntUnlocked()
+        ? ["隐藏结局：老刁翻到了这个页面，贴出《电气自动化追杀榜》，并追授成就《城院五星⭐好学生》。"]
+        : []),
       "结局：13000 是自己的钱，三四天的夜是自己熬的，题是自己做的。奖状是谁的、奖金给谁，大家心里都有数。明年换老师，不挂老刁。",
       "一句话总结：老刁这个逼养的。"
     ].join("\n");
@@ -1455,22 +2469,143 @@
     }
   });
 
+  // ---------- 彩蛋：功德木鱼 ----------
+  // 木鱼声不引外部音频，用 Web Audio 现场合成：一段短噪声当"咔"，两个快速衰减的
+  // 正弦当木头的共鸣，合起来就是敲木鱼那一下
+  let knockCtx = null;
+
+  function knockSound() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return; // 浏览器不支持就静音敲，不影响动画
+    if (!knockCtx) knockCtx = new AC();
+    if (knockCtx.state === "suspended") knockCtx.resume();
+
+    const t = knockCtx.currentTime;
+    const osc = knockCtx.createOscillator();
+    const gain = knockCtx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(1150 + Math.random() * 150, t);
+    osc.frequency.exponentialRampToValueAtTime(540, t + 0.05);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.4, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+    osc.connect(gain).connect(knockCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.15);
+
+    const len = Math.floor(knockCtx.sampleRate * 0.04);
+    const buf = knockCtx.createBuffer(1, len, knockCtx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const noise = knockCtx.createBufferSource();
+    noise.buffer = buf;
+    const bp = knockCtx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = 2200;
+    bp.Q.value = 1.2;
+    const nGain = knockCtx.createGain();
+    nGain.gain.value = 0.22;
+    noise.connect(bp).connect(nGain).connect(knockCtx.destination);
+    noise.start(t);
+  }
+
+  // 功德进度：敲满 130 下他才坐起来，在那之前一路松口。
+  // 每敲一下都飘一次当前进度，气泡里挂着他现在松到哪一步
+  const MERIT_SIT = 130;
+  const MERIT_STAGES = [
+    { hits: 10, line: "别敲了……" },
+    { hits: 30, line: "我错了……" },
+    { hits: 60, line: "奖状都给你们……" },
+    { hits: 90, line: "奖金也给你们……" },
+    { hits: 120, line: "六千五，我出一半……" },
+    { hits: MERIT_SIT, line: "行了行了，一万三我出！" }
+  ];
+  let meritHits = 0;
+
+  function meritLine() {
+    let line = "";
+    MERIT_STAGES.forEach((s) => { if (meritHits >= s.hits) line = s.line; });
+    return line;
+  }
+
+  // 敲木鱼 → 木鱼上方飘一行字：没敲满就飘当前进度，敲满了就飘 1W3
+  function popMerit(label) {
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("class", "m-pop");
+    text.setAttribute("x", 400 + (Math.random() * 34 - 17));
+    text.setAttribute("y", 132);
+    text.textContent = label;
+    meritPops.appendChild(text);
+    // 兜底：万一动画没跑起来（元素被隐藏、系统关了动效），飘字也不会无限堆积
+    while (meritPops.childElementCount > 60) meritPops.firstElementChild.remove();
+    text.addEventListener("animationend", () => text.remove());
+  }
+
+  function sayMerit(line) {
+    meritSay.querySelector(".m-say-text").textContent = line;
+    meritSay.classList.add("show");
+    replayAnim(meritSay, "pop");
+  }
+
+  // 动画期间重复敲要能重新播，所以先摘类、强制重排、再加回去
+  function replayAnim(el, cls) {
+    el.classList.remove(cls);
+    void el.getBoundingClientRect().width;
+    el.classList.add(cls);
+  }
+
+  function knockMuyu() {
+    knockSound();
+    replayAnim(muyu, "hit");
+    replayAnim(figureInner, "twitch");
+    meritHits++;
+    meritCountEl.textContent = `功德 ${meritHits} / ${MERIT_SIT}`;
+    popMerit(meritHits >= MERIT_SIT ? "1W3" : String(meritHits));
+
+    // 松口升级才刷新气泡，平时不动，免得每敲一下都闪
+    const line = meritLine();
+    if (line && line !== meritSay.querySelector(".m-say-text").textContent) sayMerit(line);
+
+    if (meritHits === MERIT_SIT) {
+      merit.classList.add("sitting");
+      showToast("🔨 敲满 130 下，他坐起来了");
+      // 结算已经出来的话，看看是不是把隐藏结局也敲出来了
+      if (finale.classList.contains("show")) showFinale();
+    }
+  }
+
+  muyu.addEventListener("click", knockMuyu);
+  muyu.addEventListener("animationend", () => muyu.classList.remove("hit"));
+  figureInner.addEventListener("animationend", () => figureInner.classList.remove("twitch"));
+
+  function revealFinale() {
+    finale.classList.add("show");
+    showFinale();
+    merit.classList.add("show");
+  }
+
   // URL 深链：?step=3 直接解锁到第 3 节；?full=1 直接展示全部（含结局）
+  // 深链在口令通过之后才生效——口令页永远是最先出现的那一屏
   const params = new URLSearchParams(location.search);
-  if (params.get("full") === "1") {
-    splash.classList.add("hidden");
-    openUpTo(STORY.length - 1, false);
-  } else {
-    const step = parseInt(params.get("step"), 10);
-    if (Number.isFinite(step) && step >= 1 && step <= STORY.length) {
+  const deepStep = params.get("full") === "1"
+    ? STORY.length
+    : clamp(parseInt(params.get("step"), 10) || 0, 0, STORY.length);
+
+  function enterStory() {
+    if (deepStep > 0) {
       splash.classList.add("hidden");
-      openUpTo(step - 1, false);
+      openUpTo(deepStep - 1, false);
+      // 深链要一步到位：最后一节的题没答也直接给结局
+      if (deepStep === STORY.length) revealFinale();
+    } else {
+      splash.classList.remove("hidden");
     }
   }
 
   renderTimeline();
   update();
   updateDrawer();
+  gateInput.focus();
 </script>
 </body>
 </html>
