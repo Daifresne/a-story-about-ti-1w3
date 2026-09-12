@@ -6,7 +6,6 @@ TI杯 · 1w3 的故事（含前传）——单页故事网站。
 
 https://daifresne.github.io/a-story-about-ti-1w3/
 
-https://1w3.rth1.xyz/
 
 ## 本地查看
 
