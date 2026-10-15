@@ -1083,6 +1083,121 @@
   .boss-result.bad { color: var(--bad); }
   .boss-hint { font-size: 12px; color: var(--text-dim); }
 
+  /* ---------- 后传：奖状公示自助查询 ---------- */
+  .lookup {
+    margin-top: 14px;
+    background: rgba(87,217,163,.05);
+    border: 1px solid rgba(87,217,163,.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .lookup-hint { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
+
+  .lookup-start {
+    width: 100%;
+    background: linear-gradient(120deg, var(--good), #34b98a);
+    color: #04241a;
+    font-weight: 800;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    transition: transform .15s ease;
+  }
+
+  .lookup-start:hover { transform: translateY(-1px); }
+
+  .lookup-panel { display: none; }
+  .lookup.on .lookup-panel { display: block; animation: fadeIn .4s ease both; }
+
+  .lookup-loading { font-size: 13px; color: var(--good); }
+
+  .lookup-body { display: none; }
+  .lookup-body.show { display: block; animation: fadeIn .45s ease both; }
+
+  .lookup-title { font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+
+  .lookup-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .lookup-row .lookup-name { flex: 1; }
+  .lookup-row .lookup-tag { font-size: 11px; color: var(--text-dim); }
+
+  /* 名单里那个一场没来的人，慢半拍才浮出来 */
+  .lookup-row.hit {
+    border-color: rgba(255,184,77,.55);
+    background: rgba(255,184,77,.10);
+    animation: fadeIn .5s .55s ease both;
+  }
+
+  .lookup-row.hit .lookup-name { font-weight: 800; }
+
+  .lookup-row .lookup-note {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 800;
+    color: #221303;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    border-radius: 999px;
+    padding: 2px 9px;
+  }
+
+  .lookup-verdict {
+    margin: 12px 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    background: rgba(255,107,107,.07);
+    border-left: 3px solid var(--bad);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .lookup-verdict s { color: var(--bad); }
+
+  .lookup-extract {
+    width: 100%;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #221303;
+    font-weight: 800;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    transition: transform .15s ease, filter .15s ease;
+  }
+
+  .lookup-extract:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+  .lookup-extract:disabled { opacity: .7; cursor: default; }
+
+  .lookup-result { display: none; margin-top: 12px; }
+  .lookup-result.show { display: block; animation: fadeIn .5s ease both; }
+
+  .lookup-loot {
+    background: rgba(255,184,77,.08);
+    border: 1px solid rgba(255,184,77,.45);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .loot-head { font-size: 14px; font-weight: 900; color: var(--accent); margin-bottom: 8px; }
+
+  .loot-item { font-size: 13px; padding: 4px 0; animation: rise .4s ease both; }
+  .loot-item:nth-child(2) { animation-delay: .05s; }
+  .loot-item:nth-child(3) { animation-delay: .18s; }
+  .loot-item:nth-child(4) { animation-delay: .31s; }
+
+  .lookup-note { margin-top: 10px; font-size: 13px; color: var(--bad); }
+
   /* ---------- 真结局 ---------- */
   .true-end {
     display: none;
@@ -1395,7 +1510,7 @@
     <div class="header-inner">
       <div class="header-title">TI 杯 <span>·</span> 1w3</div>
       <div class="progress-wrap"><div id="progressBar"></div></div>
-      <div id="progressText">0 / 14</div>
+      <div id="progressText">0 / 18</div>
       <div class="heart-pill" id="heartPill">❤️ 道心 <span id="heartVal">100</span></div>
       <div class="heart-pill" id="jiaoPill">🎭 老刁好感 <span id="jiaoVal">100</span></div>
     </div>
@@ -1457,12 +1572,12 @@
       <span class="flag">🏁</span>
       <h2>复盘完成</h2>
       <div class="title-banner" id="titleBanner">🏅 道心微澜</div>
-      <p>13000 是自己的钱，三四天的夜是自己熬的，题是自己做的。奖状是谁的、奖金给谁，大家心里都有数。明年，换老师，不挂老刁。</p>
+      <p>13000 是自己的钱，三四天的夜是自己熬的，题是自己做的。奖状是谁的、奖金给谁，大家心里都有数。后传：报销涨到 800（多的 300 从另一队扣），奖状说查不到，人家自己查到了——白嫖一个大奖。明年，换老师，不挂老刁。</p>
       <p class="one-liner">💬 一句话总结：<b>老刁这个逼养的。</b></p>
       <div class="stats">
         <span>道心 <b id="finalHeart">100</b></span>
         <span>老刁好感 <b id="finalJiao">100</b></span>
-        <span>证据 <b id="finalCards">0</b> / <b id="finalCardsMax">15</b></span>
+        <span>证据 <b id="finalCards">0</b> / <b id="finalCardsMax">18</b></span>
         <span>称号 <b id="finalTitle">-</b></span>
       </div>
       <div class="eval-box">
@@ -1552,7 +1667,7 @@
   </main>
 
   <!-- 证据柜 -->
-  <button class="drawer-btn" id="drawerBtn">📦 证据柜 (0 / 15)</button>
+  <button class="drawer-btn" id="drawerBtn">📦 证据柜 (0 / 18)</button>
   <div class="drawer" id="drawer">
     <div class="drawer-panel">
       <div class="drawer-head">
@@ -1739,6 +1854,41 @@
       ],
       card: { emoji: "📌", name: "明年作战图", desc: "挂电子主任，不挂老刁" },
       effect: 0
+    },
+
+    /* ---------- 后传 ---------- */
+    {
+      type: "chapter",
+      divider: "后传 · 事情还没完",
+      emoji: "💵",
+      title: "报销：600 变 800",
+      text: "复盘都写完了，账又动了一次。老刁那边的报销最后给到了 800——原本 500，后来 600，现在是 800。多出来的那 300 是哪来的？看看另一队就知道了：他们只报了 200。",
+      quote: "600 变 800，另一队只报 200。",
+      card: { emoji: "💵", name: "报销单·终版", desc: "800；多的 300，另一队只报 200" },
+      effect: -4
+    },
+    {
+      type: "dialogue",
+      emoji: "📵",
+      title: "奖状：他说查不到",
+      text: "奖状那边也没完。老刁嘴上把话说死了：不给第三人——不发、不复印、不截图。末了还补一句：这东西他自己也查不到，你们放心。",
+      scene: { spEmoji: "🎭", speaker: "老刁", line: "我这边不给他。他自己也查不到，这事就到这。" },
+      question: "老刁这句话，你信吗？",
+      options: [
+        { label: "信。奖状在我们手里，他上哪儿查", reply: "结果人家自己在公示里翻到了自己的名字。", effect: -6, jiaoEffect: 8 },
+        { label: "不信。评过的奖，官方那边总有记录", reply: "记录就是公示，挂在网上，谁都能看。", effect: -3, jiaoEffect: -10 },
+        { label: "懒得管。跟钱没关系的事，随他去", reply: "……可他查到的时候，还顺手把大奖带走了。", effect: -5, jiaoEffect: -2 }
+      ],
+      card: { emoji: "📵", name: "「查不到」原话", desc: "老刁：他自己也查不到" },
+      effect: 0
+    },
+    {
+      type: "lookup",
+      emoji: "📡",
+      title: "公示：人家自己查到了",
+      text: "老刁锁得住手里那张纸，锁不住公示名单。获奖记录本来就是自助可查的——第三人自己一查，名字好好地挂在那儿。没来一天、没花一分钱，奖照样是他的。这一趟，百万撤离。",
+      lookupIntro: "2026 TI 杯 · H 题 获奖公示，谁都能查。你也来查一次：",
+      card: { emoji: "📡", name: "获奖公示", desc: "自助可查：白嫖成功，百万撤离" }
     }
   ];
 
@@ -1886,12 +2036,32 @@
       </div>`;
   }
 
+  function buildLookup(i) {
+    return `
+      <div class="lookup" data-idx="${i}">
+        <p class="lookup-hint">${STORY[i].lookupIntro}</p>
+        <button class="lookup-start">🔍 查询获奖公示</button>
+        <div class="lookup-panel">
+          <p class="lookup-loading">正在查询公示 ……</p>
+          <div class="lookup-body">
+            <p class="lookup-title">📋 2026 TI 杯 · H 题 获奖名单（公示）</p>
+            <div class="lookup-row"><span class="lookup-name">袁帅</span><span class="lookup-tag">H 题</span></div>
+            <div class="lookup-row"><span class="lookup-name">曹梦腾</span><span class="lookup-tag">H 题</span></div>
+            <div class="lookup-row hit"><span class="lookup-name">第三人 · 23 电子</span><span class="lookup-tag">H 题</span><span class="lookup-note">一场没来</span></div>
+            <p class="lookup-verdict">老刁：「他自己也查不到。」—— <s>查不到</s> 查到了，还是公开的。</p>
+            <button class="lookup-extract">🚁 百万撤离</button>
+          </div>
+        </div>
+        <p class="lookup-result"></p>
+      </div>`;
+  }
+
   function renderTimeline() {
     STORY.forEach((item, i) => {
       const node = document.createElement("article");
       node.className = "node locked";
       const isBlocked = item.type === "quiz" || item.type === "dialogue"
-        || item.type === "game" || item.type === "boss";
+        || item.type === "game" || item.type === "boss" || item.type === "lookup";
       node.innerHTML = `
         ${item.divider ? `<div class="divider"><span>${item.divider}</span></div>` : ""}
         <div class="dot"></div>
@@ -1906,6 +2076,7 @@
             ${item.type === "quiz" || item.type === "dialogue" ? buildInteractive(item, i) : ""}
             ${item.type === "game" ? buildGame(i) : ""}
             ${item.type === "boss" ? buildBoss(i) : ""}
+            ${item.type === "lookup" ? buildLookup(i) : ""}
             <div class="node-foot">
               <span class="hint">${i === STORY.length - 1 ? "最后一节 🏁" : "看完这一节，解锁下一节"}</span>
               ${i === STORY.length - 1 ? "" :
@@ -1973,7 +2144,8 @@
   function maybeShowFinale(shouldScroll) {
     const last = STORY.length - 1;
     if (current < last) return;
-    const blocked = STORY[last].type === "quiz" || STORY[last].type === "dialogue";
+    const blocked = STORY[last].type === "quiz" || STORY[last].type === "dialogue"
+      || STORY[last].type === "lookup";
     if (blocked && answered[last] === undefined) return;
     revealFinale();
     if (shouldScroll !== false) {
@@ -2288,6 +2460,58 @@
     if (finale.classList.contains("show")) showFinale();
   }
 
+  // ---------- 后传：奖状公示自助查询 ----------
+  // 三步走：查询 → 出名单 → 撤离。走完才算这一节结束，所以最后一节要拿 answered 拦住结局
+  let lookup = { active: false, done: false, nodeIdx: -1, timer: null };
+
+  function lookupEl(idx) { return nodes[idx].querySelector(".lookup"); }
+
+  function startLookup(idx) {
+    if (lookup.active || lookup.done) return;
+    const el = lookupEl(idx);
+    el.classList.add("on");
+    el.querySelector(".lookup-start").style.display = "none";
+    lookup = { active: true, done: false, nodeIdx: idx, timer: null };
+    lookup.timer = setTimeout(() => {
+      if (!el.isConnected) return; // 查询期间点了「再走一遍」，这次作废
+      lookup.active = false;
+      el.querySelector(".lookup-loading").style.display = "none";
+      el.querySelector(".lookup-body").classList.add("show");
+    }, 900);
+  }
+
+  function extractLookup(idx) {
+    if (lookup.done) return;
+    lookup.done = true;
+    clearTimeout(lookup.timer);
+
+    const el = lookupEl(idx);
+    const btn = el.querySelector(".lookup-extract");
+    btn.disabled = true;
+    btn.textContent = "🚁 撤离中…";
+
+    lookup.timer = setTimeout(() => {
+      if (!el.isConnected) return;
+      btn.style.display = "none";
+      const res = el.querySelector(".lookup-result");
+      res.classList.add("show");
+      res.innerHTML = `
+        <div class="lookup-loot">
+          <div class="loot-head">🚁 撤离成功 · 白嫖到账</div>
+          <div class="loot-item">🏅 大奖 ×1</div>
+          <div class="loot-item">💰 投入 0 元 · 出勤 0 天</div>
+          <div class="loot-item">👻 全程，他本人没出现过</div>
+        </div>
+        <p class="lookup-note">道心 -5：不是气他白嫖，是气这系统真好白嫖。</p>`;
+      answered[idx] = true; // 这一节走完了，别再拦结局
+      applyHeart(-5);
+      collected.add(STORY[idx].card.name);
+      updateDrawer();
+      showNext(nodes[idx]);
+      maybeShowFinale(true);
+    }, 700);
+  }
+
   // 点击节点 / 选项 / 游戏
   timeline.addEventListener("click", (e) => {
     const nextBtn = e.target.closest(".next-btn");
@@ -2307,6 +2531,12 @@
 
     const bm = e.target.closest(".boss-move");
     if (bm) { if (boss.active) bossAnswer(boss.nodeIdx, bm.dataset.move); return; }
+
+    const ls = e.target.closest(".lookup-start");
+    if (ls) { startLookup(nodes.indexOf(ls.closest(".node"))); return; }
+
+    const le = e.target.closest(".lookup-extract");
+    if (le) { extractLookup(nodes.indexOf(le.closest(".node"))); return; }
 
     const card = e.target.closest(".node-card");
     if (!card) return;
@@ -2329,6 +2559,7 @@
     if (e.key !== "Enter" && e.key !== " ") return;
     if (!splash.classList.contains("hidden")) { start(); return; }
     if (game.active) { fireGame(); return; }
+    if (lookup.active) return; // 查询还没出结果，别拿回车偷跑
     if (current < STORY.length - 1) unlock(current + 1);
   });
 
@@ -2416,6 +2647,8 @@
       active: false, over: false, won: false,
       nodeIdx: -1, round: 0, hp: BOSS_HP, you: BOSS_YOU, stance: null, timer: null, busy: false
     };
+    clearTimeout(lookup.timer);
+    lookup = { active: false, done: false, nodeIdx: -1, timer: null };
     document.getElementById("trueEnd").classList.remove("show");
     document.getElementById("huntEnd").classList.remove("show");
     heart = 100;
@@ -2458,6 +2691,7 @@
       ...(huntUnlocked()
         ? ["隐藏结局：老刁翻到了这个页面，贴出《电气自动化追杀榜》，并追授成就《城院五星⭐好学生》。"]
         : []),
+      "后传：报销涨到 800，多出来的 300 从另一队扣（另一队只报 200）；奖状老刁说不给、也说查不到，第三人自己查到了公示，白嫖走一个大奖。",
       "结局：13000 是自己的钱，三四天的夜是自己熬的，题是自己做的。奖状是谁的、奖金给谁，大家心里都有数。明年换老师，不挂老刁。",
       "一句话总结：老刁这个逼养的。"
     ].join("\n");
