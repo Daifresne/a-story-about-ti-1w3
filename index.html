@@ -4,6 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TI杯 · 1w3 的故事（含前传）</title>
+<script>
+// 入口校验：这一页只认「七宗罪」那边过来的访问。
+// 同一域名下共享 sessionStorage —— 七宗罪通过口令时会种一个 sds_unlock 令牌。
+// 纯前端的东西，挡的是随手直接输网址的人，不是真安全：翻源码就能绕过。
+(function () {
+  var KEY = "sds_unlock";
+  var TTL = 2 * 60 * 60 * 1000; // 2 小时
+  var ok = false;
+  try {
+    var t = +(sessionStorage.getItem(KEY) || 0);
+    if (t && Date.now() - t < TTL) ok = true;
+  } catch (e) {}
+  if (!ok && (document.referrer || "").indexOf("seven-deadly-sins") !== -1) {
+    ok = true;
+    // 从七宗罪点进来的：顺手把令牌种下，之后刷新不算「直接访问」
+    try { sessionStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+  }
+  if (ok) document.documentElement.classList.add("access-ok");
+})();
+</script>
 <style>
   :root {
     --bg: #0e1017;
@@ -41,140 +61,32 @@
 
   button { font-family: inherit; cursor: pointer; }
 
-  /* ---------- 口令页 ---------- */
-  #gate {
+  /* ---------- 非法访问 ---------- */
+  #access-denied { display: none; }
+
+  /* 没通过校验：页面上除了这块牌子，什么都别露出来 */
+  html:not(.access-ok) body > *:not(#access-denied) { visibility: hidden !important; }
+
+  html:not(.access-ok) #access-denied {
+    display: flex;
     position: fixed;
     inset: 0;
-    z-index: 55;
-    display: flex;
+    z-index: 9999;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 14px;
     padding: 24px;
-    background:
-      radial-gradient(800px 400px at 50% 0%, rgba(255,184,77,.08), transparent 60%),
-      radial-gradient(600px 300px at 50% 100%, rgba(255,122,89,.08), transparent 60%),
-      var(--bg);
-    transition: opacity .5s ease, visibility .5s ease;
-  }
-
-  #gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-  .gate-inner {
-    width: 100%;
-    max-width: 540px;
     text-align: center;
-    animation: rise .8s ease both;
+    background:
+      radial-gradient(800px 400px at 50% 0%, rgba(255,107,107,.08), transparent 60%),
+      var(--bg);
   }
 
-  .gate-card {
-    position: relative;
-    margin-top: 4px;
-    background: linear-gradient(180deg, rgba(26,31,46,.95), rgba(20,24,35,.95));
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 26px 22px 24px;
-    overflow: hidden;
-  }
-
-  .gate-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,184,77,.65), transparent);
-  }
-
-  .gate-prompt {
-    font-size: clamp(15px, 3.6vw, 19px);
-    font-weight: 800;
-    letter-spacing: .04em;
-    line-height: 1.7;
-  }
-
-  .gate-prompt .blank {
-    color: var(--accent);
-    letter-spacing: .12em;
-    animation: blink 1.2s steps(2, start) infinite;
-  }
-
-  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: .25; } }
-
-  .gate-field {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 22px;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 5px 5px 5px 14px;
-    transition: border-color .2s ease, box-shadow .2s ease;
-  }
-
-  .gate-field:focus-within {
-    border-color: rgba(255,184,77,.6);
-    box-shadow: 0 0 0 3px rgba(255,184,77,.10);
-  }
-
-  .gate-field.shake { animation: shake .4s ease; border-color: var(--bad); }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(7px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(3px); }
-  }
-
-  .gate-caret { color: var(--accent); font-weight: 800; flex-shrink: 0; }
-
-  #gateInput {
-    flex: 1;
-    min-width: 0;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 15px;
-    letter-spacing: .06em;
-    padding: 11px 0;
-  }
-
-  #gateInput::placeholder { color: #5d6679; letter-spacing: normal; }
-
-  #gateBtn {
-    flex-shrink: 0;
-    background: linear-gradient(120deg, var(--accent), var(--accent-2));
-    color: #221303;
-    font-size: 14px;
-    font-weight: 800;
-    border: none;
-    border-radius: 9px;
-    padding: 11px 20px;
-    transition: transform .15s ease, filter .15s ease;
-  }
-
-  #gateBtn:hover { transform: translateY(-1px); filter: brightness(1.06); }
-  #gateBtn:active { transform: scale(.97); }
-
-  .gate-msg {
-    margin-top: 12px;
-    font-size: 13px;
-    min-height: 1.4em;
-    color: var(--bad);
-  }
-
-  .gate-msg.ok { color: var(--good); }
-
-  .gate-note {
-    margin-top: 18px;
-    font-size: 12px;
-    color: #5d6679;
-  }
+  #access-denied .ad-icon { font-size: 64px; line-height: 1; }
+  #access-denied h1 { font-size: clamp(26px, 6vw, 38px); font-weight: 900; letter-spacing: .2em; color: var(--bad); }
+  #access-denied p { color: var(--text-dim); font-size: 14px; max-width: 460px; }
+  #access-denied a { color: var(--accent); font-weight: 700; }
 
   /* ---------- 开场 ---------- */
   #splash {
@@ -1477,21 +1389,12 @@
 </head>
 <body>
 
-  <!-- 口令页：进入开场之前的第一道门 -->
-  <div id="gate">
-    <div class="gate-inner">
-      <span class="kicker">Access Required</span>
-      <div class="gate-card">
-        <p class="gate-prompt">请输入神秘小口令：逸一时误一时，<span class="blank">_______</span></p>
-        <div class="gate-field" id="gateField">
-          <span class="gate-caret">›</span>
-          <input id="gateInput" type="text" autocomplete="off" spellcheck="false" placeholder="在这里输入口令…">
-          <button id="gateBtn">验证</button>
-        </div>
-        <p class="gate-msg" id="gateMsg" aria-live="polite"></p>
-      </div>
-      <p class="gate-note">口令答对才放你进去 · 提示：后半句念出来，是串数字的谐音</p>
-    </div>
+  <!-- 未通过入口校验时显示这一屏，其余内容由 CSS 隐藏 -->
+  <div id="access-denied">
+    <div class="ad-icon">⛔</div>
+    <h1>非法访问</h1>
+    <p>这一页不接受直接访问。</p>
+    <p>请从 <a href="https://daifresne.github.io/seven-deadly-sins/">七宗罪</a> 入口进入。</p>
   </div>
 
   <!-- 开场 -->
@@ -1904,11 +1807,6 @@
   const jiaoPill = document.getElementById("jiaoPill");
   const jiaoVal = document.getElementById("jiaoVal");
   const toast = document.getElementById("toast");
-  const gate = document.getElementById("gate");
-  const gateField = document.getElementById("gateField");
-  const gateInput = document.getElementById("gateInput");
-  const gateBtn = document.getElementById("gateBtn");
-  const gateMsg = document.getElementById("gateMsg");
   const splash = document.getElementById("splash");
   const drawer = document.getElementById("drawer");
   const drawerBtn = document.getElementById("drawerBtn");
@@ -2554,8 +2452,6 @@
 
   // 键盘支持
   document.addEventListener("keydown", (e) => {
-    // 口令没过之前，键盘只服务口令输入框，不许偷跑剧情
-    if (!gate.classList.contains("hidden")) return;
     if (e.key !== "Enter" && e.key !== " ") return;
     if (!splash.classList.contains("hidden")) { start(); return; }
     if (game.active) { fireGame(); return; }
@@ -2572,53 +2468,6 @@
   splash.addEventListener("click", (e) => {
     if (!e.target.closest("#startBtn")) start();
   });
-
-  // ---------- 口令页 ----------
-  // 口令做字符拆解：只存 UTF-16 码位与掩码异或后的值，运行时逐字还原，
-  // 源码里既搜不到原句，也看不出原字的码位（F12 直接翻是看不到答案的）
-  const GATE_MASK = 0x2a;
-  const GATE_CODE = [0x9012, 0x4e6f, 0x9012, 0x4e6f, 0x7f48, 0x5dd8, 0x9fae];
-  const GATE_ANSWER = GATE_CODE.map((c) => String.fromCharCode(c ^ GATE_MASK)).join("");
-
-  // 宽容匹配：忽略空格和各类标点，允许把整句抄进来
-  function normalizeGate(s) {
-    return (s || "").replace(/[\s，。、,.!！?？;；:：""''「」『』（）()\[\]【】_—\-]/g, "");
-  }
-
-  function checkGate() {
-    const val = normalizeGate(gateInput.value);
-    if (!val) {
-      shakeGate("先输入点什么吧……");
-      return;
-    }
-    if (val.includes(GATE_ANSWER)) {
-      gateMsg.textContent = "✅ 口令正确，门开了";
-      gateMsg.classList.add("ok");
-      gateInput.blur();
-      setTimeout(() => {
-        gate.classList.add("hidden");
-        showToast("🔓 口令正确，欢迎回来");
-        enterStory();
-      }, 380);
-    } else {
-      shakeGate("❌ 口令错误，再想想");
-    }
-  }
-
-  function shakeGate(msg) {
-    gateMsg.textContent = msg;
-    gateMsg.classList.remove("ok");
-    gateField.classList.remove("shake");
-    void gateField.offsetWidth; // 重置动画，保证连续输错也能抖动
-    gateField.classList.add("shake");
-    gateInput.select();
-  }
-
-  gateBtn.addEventListener("click", checkGate);
-  gateInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); checkGate(); }
-  });
-  gateField.addEventListener("animationend", () => gateField.classList.remove("shake"));
 
   // 证据柜
   function toggleDrawer(show) {
@@ -2839,7 +2688,7 @@
   renderTimeline();
   update();
   updateDrawer();
-  gateInput.focus();
+  enterStory();
 </script>
 </body>
 </html>
